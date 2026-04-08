@@ -1,0 +1,101 @@
+source,eq_id,datetime_utc,date_iso,year,month,latitude,longitude,magnitude,depth_km,distance_dhaka_km,location_text,dist_direction,usgs_code,felt,alert
+earthquakelist_api_latest,1267293,2026-04-07 22:46:05,2026-04-07,2026,4,24.808,92.157,3.0,10.0,,INDIA-BANGLADESH BORDER REGION,,,0,False
+earthquakelist_html,1267291,2026-04-07 22:39:22,2026-04-07,2026,4,25.035,91.963,2.9,,,18 km NE from Sylhet,18KM NE from Sylhet,,0,
+earthquakelist_html,1267281,2026-04-07 21:36:30,2026-04-07,2026,4,24.7397,93.1243,2.7,,,128 km E from Sylhet,128KM E from Sylhet,,0,
+earthquakelist_html,1267062,2026-04-07 08:48:29,2026-04-07,2026,4,24.8988,92.7216,4.9,,,86 km E from Sylhet,86KM E from Sylhet,,0,
+earthquakelist_html,1266841,2026-04-06 22:22:30,2026-04-06,2026,4,27.141,92.715,2.6,,,263 km N from Sylhet,263KM N from Sylhet,,0,
+earthquakelist_html,1266863,2026-04-06 22:00:24,2026-04-06,2026,4,24.811,93.711,3.0,,,186 km E from Sylhet,186KM E from Sylhet,,0,
+earthquakelist_html,1266784,2026-04-06 19:23:39,2026-04-06,2026,4,24.338,93.609,4.3,,,186 km E from Sylhet,186KM E from Sylhet,,0,
+earthquakelist_html,1266741,2026-04-06 17:42:30,2026-04-06,2026,4,26.873,89.38,2.7,,,126 km N from Rangpur,126KM N from Rangpur,,0,
+earthquakelist_html,1266595,2026-04-06 09:11:22,2026-04-06,2026,4,28.222,87.873,3.1,,,290 km N from Saidpur,290KM N from Saidpur,,0,
+earthquakelist_html,1266377,2026-04-05 23:24:22,2026-04-05,2026,4,24.411,94.563,3.2,,,277 km E from Sylhet,277KM E from Sylhet,,0,
+earthquakelist_html,1266260,2026-04-05 18:16:35,2026-04-05,2026,4,27.268,88.657,2.6,,,179 km N from Rangpur,179KM N from Rangpur,,0,
+earthquakelist_html,1266081,2026-04-05 09:50:09,2026-04-05,2026,4,28.277,88.158,2.8,,,287 km N from Saidpur,287KM N from Saidpur,,0,
+earthquakelist_html,1265701,2026-04-04 19:04:28,2026-04-04,2026,4,23.2913,90.9437,3.9,,,31 km SW from Comilla,31KM SW from Comilla,,0,
+earthquakelist_html,1265683,2026-04-04 18:04:03,2026-04-04,2026,4,24.84,94.583,3.5,,,274 km E from Sylhet,274KM E from Sylhet,,0,
+earthquakelist_html,1265632,2026-04-04 14:53:27,2026-04-04,2026,4,26.251,92.91,3.0,,,183 km NE from Sylhet,183KM NE from Sylhet,,0,
+earthquakelist_html,1265672,2026-04-04 14:48:17,2026-04-04,2026,4,23.016,91.944,2.9,,,76 km N from Chattogram,76KM N from Chattogram,,0,
+earthquakelist_html,1265541,2026-04-04 11:30:40,2026-04-04,2026,4,27.0925,89.3175,4.3,,,150 km N from Rangpur,150KM N from Rangpur,,0,
+earthquakelist_html,1265175,2026-04-03 21:54:04,2026-04-03,2026,4,26.203,92.466,2.8,,,157 km N from Sylhet,157KM N from Sylhet,,0,
+earthquakelist_html,1264994,2026-04-03 14:42:34,2026-04-03,2026,4,28.11,87.626,3.9,,,288 km NW from Saidpur,288KM NW from Saidpur,,0,
+earthquakelist_html,1264895,2026-04-03 10:24:45,2026-04-03,2026,4,27.331,92.068,3.4,,,271 km N from Sylhet,271KM N from Sylhet,,0,
+earthquakelist_html,1264780,2026-04-03 04:55:25,2026-04-03,2026,4,27.354,92.071,3.5,,,274 km N from Sylhet,274KM N from Sylhet,,0,
+earthquakelist_html,1264597,2026-04-02 22:22:07,2026-04-02,2026,4,26.324,92.497,2.8,,,170 km N from Sylhet,170KM N from Sylhet,,0,
+earthquakelist_html,1263520,2026-03-31 22:26:19,2026-03-31,2026,3,22.636,93.26,3.4,,,150 km E from Chattogram,150KM E from Chattogram,,0,
+earthquakelist_html,1263409,2026-03-31 21:12:27,2026-03-31,2026,3,23.35,93.97,3.1,,,246 km NE from Chattogram,246KM NE from Chattogram,,0,
+earthquakelist_html,1263382,2026-03-31 19:59:45,2026-03-31,2026,3,22.94,94.352,3.6,,,267 km E from Chattogram,267KM E from Chattogram,,0,
+earthquakelist_html,1262469,2026-03-29 11:15:12,2026-03-29,2026,3,27.127,89.086,2.6,,,154 km N from Rangpur,154KM N from Rangpur,,0,
+earthquakelist_api_latest,1262368,2026-03-29 03:14:40,2026-03-29,2026,3,27.182,87.9335,4.4,10.0,,"30 km N of Ilām, Nepal",,us7000s8h7,1,False
+earthquakelist_api_latest,1262213,2026-03-28 17:10:33,2026-03-28,2026,3,27.296,89.633,3.5,10.0,,BHUTAN,,,0,False
+earthquakelist_api_latest,1261654,2026-03-27 08:55:45,2026-03-27,2026,3,25.951,90.839,3.9,10.0,,"MEGHALAYA, INDIA REGION",,,0,False
+earthquakelist_api_latest,1261452,2026-03-26 23:57:54,2026-03-26,2026,3,23.732,94.153,3.1,17.0,,MYANMAR,,,0,False
+earthquakelist_api_latest,1261372,2026-03-26 21:49:28,2026-03-26,2026,3,26.463,94.038,2.8,15.0,,"ASSAM - NAGALAND REGION, INDIA",,,0,False
+earthquakelist_api_latest,1260954,2026-03-25 21:36:13,2026-03-25,2026,3,23.969,93.583,2.9,10.0,,MYANMAR-INDIA BORDER REGION,,,0,False
+earthquakelist_api_latest,1260924,2026-03-25 20:22:30,2026-03-25,2026,3,22.9822,92.3562,2.7,10.0,,INDIA-BANGLADESH BORDER REGION,,,0,False
+earthquakelist_api_latest,1260852,2026-03-25 16:01:25,2026-03-25,2026,3,23.1718,94.3994,4.2,88.7,,"52 km S of Mawlaik, Burma (Myanmar)",,us7000s7jm,0,False
+earthquakelist_api_latest,1260847,2026-03-25 15:22:49,2026-03-25,2026,3,28.093,87.483,3.2,10.0,,WESTERN XIZANG,,,0,False
+earthquakelist_api_latest,1259462,2026-03-22 06:31:10,2026-03-22,2026,3,23.133,93.935,3.5,106.0,,MYANMAR-INDIA BORDER REGION,,,0,False
+earthquakelist_api_latest,1259145,2026-03-21 15:16:01,2026-03-21,2026,3,27.556,88.576,4.1,14.0,,"SIKKIM, INDIA",,,0,False
+earthquakelist_api_latest,1259005,2026-03-21 06:29:21,2026-03-21,2026,3,26.34,89.925,2.9,5.0,,INDIA-BANGLADESH BORDER REGION,,,0,False
+earthquakelist_api_latest,1258937,2026-03-21 02:03:28,2026-03-21,2026,3,27.753,87.915,3.3,15.0,,NEPAL,,,0,False
+earthquakelist_api_latest,1258006,2026-03-19 23:07:48,2026-03-19,2026,3,27.332,88.499,2.7,10.0,,"SIKKIM, INDIA",,,0,False
+earthquakelist_api_latest,1258001,2026-03-19 22:56:13,2026-03-19,2026,3,26.843,87.9216,3.9,10.0,,NEPAL-INDIA BORDER REGION,,,0,False
+earthquakelist_api_latest,1257719,2026-03-19 05:38:59,2026-03-19,2026,3,28.091,87.872,2.8,18.0,,WESTERN XIZANG,,,0,False
+earthquakelist_api_latest,1257581,2026-03-18 23:35:00,2026-03-18,2026,3,26.55,93.176,2.6,5.0,,"ASSAM, INDIA",,,0,False
+earthquakelist_api_latest,1257512,2026-03-18 20:01:15,2026-03-18,2026,3,28.161,87.964,2.5,10.0,,WESTERN XIZANG,,,0,False
+earthquakelist_api_latest,1257474,2026-03-18 16:50:56,2026-03-18,2026,3,23.635,93.277,2.8,30.0,,MYANMAR-INDIA BORDER REGION,,,0,False
+earthquakelist_api_latest,1262308,2026-03-18 04:23:00,2026-03-18,2026,3,24.8382,94.6026,4.2,74.3,,"58 km ENE of Yairipok, India",,us7000s83u,0,False
+earthquakelist_api_latest,1257277,2026-03-18 04:22:59,2026-03-18,2026,3,24.712,94.197,3.8,50.0,,MYANMAR-INDIA BORDER REGION,,,0,False
+earthquakelist_api_latest,1257228,2026-03-18 00:40:43,2026-03-18,2026,3,26.12,90.59,2.6,5.0,,"ASSAM, INDIA",,,0,False
+earthquakelist_api_latest,1256830,2026-03-17 06:38:52,2026-03-17,2026,3,24.628,94.4094,4.4,94.1,,"35 km E of Wāngjing, India",,us6000sgsp,4,False
+earthquakelist_api_latest,1256625,2026-03-16 21:24:37,2026-03-16,2026,3,26.61,92.52,2.5,5.0,,"ASSAM, INDIA",,,0,False
+earthquakelist_api_strongest,1249232,2026-02-27 07:52:25,2026-02-27,2026,2,22.5236,89.1853,5.0,10.0,,"23 km SSE of Sātkhira, Bangladesh",,us7000s0pc,227,yellow
+earthquakelist_api_strongest,1239624,2026-02-03 15:51:31,2026-02-03,2026,2,20.5355,94.0461,5.1,71.5,,"86 km W of Yenangyaung, Burma (Myanmar)",,us6000s65j,4,False
+earthquakelist_api_strongest,1239619,2026-02-03 15:34:02,2026-02-03,2026,2,20.4368,93.9466,5.8,59.0,,"96 km W of Yenangyaung, Burma (Myanmar)",,us6000s65b,26,green
+earthquakelist_api_strongest,1228910,2026-01-04 22:47:39,2026-01-04,2026,1,26.3621,92.3991,5.2,41.1,,"13 km NNE of Morigaon, India",,us7000rmhd,94,green
+earthquakelist_api_strongest,1213065,2025-11-21 04:38:29,2025-11-21,2025,11,23.8578,90.5404,5.4,27.0,,"14 km ESE of Tungi, Bangladesh",,us6000rpht,989,yellow
+earthquakelist_api_strongest,1174075,2025-09-14 11:11:51,2025-09-14,2025,9,26.7097,92.2103,5.5,29.0,,"11 km ESE of Udalguri, India",,us7000qw56,120,orange
+earthquakelist_api_strongest,1163584,2025-08-22 04:56:14,2025-08-22,2025,8,23.403,94.2596,5.3,10.0,,"30 km SSW of Mawlaik, Burma (Myanmar)",,us6000r2z6,0,False
+earthquakelist_api_strongest,1114460,2025-05-27 20:24:28,2025-05-27,2025,5,24.4467,93.8427,5.1,50.0,,"8 km SE of Moirāng, India",,us6000qg9r,47,False
+earthquakelist_api_strongest,1071765,2025-03-05 05:36:36,2025-03-05,2025,3,24.5491,94.6954,5.4,88.2,,"64 km E of Wāngjing, India",,us6000pwz6,22,green
+earthquakelist_api_strongest,1069957,2025-02-26 20:55:37,2025-02-26,2025,2,26.3002,92.3408,5.3,10.0,,"5 km N of Morigaon, India",,us6000pvpc,139,False
+earthquakelist_api_strongest,1068593,2025-02-22 10:33:31,2025-02-22,2025,2,21.5846,93.8043,5.0,59.2,,"119 km S of Hakha, Burma (Myanmar)",,us7000pffe,0,False
+earthquakelist_api_strongest,855106,2023-12-02 03:35:33,2023-12-02,2023,12,23.1475,90.9317,5.5,45.1,,"9 km ENE of Rāmganj, Bangladesh",,us7000lfaa,338,yellow
+earthquakelist_api_strongest,810542,2023-08-14 14:49:49,2023-08-14,2023,8,24.9796,92.2481,5.3,36.6,,"16 km NW of Karīmganj, India",,us6000kzvl,163,green
+earthquakelist_api_strongest,789375,2023-06-16 04:46:11,2023-06-16,2023,6,24.7339,92.0224,5.0,10.0,,India-Bangladesh border region,,us7000k8uw,78,False
+earthquakelist_api_strongest,711783,2023-01-23 13:42:03,2023-01-23,2023,1,24.8836,93.079,5.1,10.0,,"12 km NE of Lakhipur, India",,us7000j6c8,11,False
+earthquakelist_api_strongest,20185,2022-07-31 02:28:09,2022-07-31,2022,7,27.1316,86.7827,5.1,10.0,,"26 km W of Bhojpur, Nepal",,us6000i6vr,55,False
+earthquakelist_api_strongest,3093,2022-05-01 15:15:39,2022-05-01,2022,5,22.6784,94.2561,5.0,90.8,,"64 km ESE of Falam, Myanmar",,us7000h67u,3,False
+earthquakelist_api_strongest,8078,2022-01-21 10:12:32,2022-01-21,2022,1,23.0871,93.8172,5.4,59.0,,"23 km NE of Falam, Myanmar",,us7000gdtu,22,green
+earthquakelist_html,10974,2021-11-25 23:45:42,2021-11-25,2021,11,22.8232,93.5061,6.2,,,180 km ENE from Chattogram,180KM ENE from Chattogram,,0,
+earthquakelist_api_strongest,15393,2021-08-17 15:32:25,2021-08-17,2021,8,24.6509,94.4519,4.9,63.3,,"39 km E of W?ngjing, India",,us6000f7jj,1,False
+earthquakelist_api_strongest,21400,2021-07-26 05:03:31,2021-07-26,2021,7,24.5824,94.4421,4.9,66.8,,"38 km E of W?ngjing, India",,us6000ez3j,7,False
+earthquakelist_api_strongest,22183,2021-07-07 03:15:24,2021-07-07,2021,7,25.9603,90.3499,5.3,10.0,,"8 km SSE of Lakhipur, India",,us7000ej9c,46,False
+earthquakelist_api_strongest,28110,2021-04-28 02:33:01,2021-04-28,2021,4,26.7489,92.5136,5.0,35.0,,"6 km NE of Dhekiajuli, India",,us7000dy3r,32,False
+earthquakelist_html,28115,2021-04-28 02:21:26,2021-04-28,2021,4,26.7813,92.4565,6.0,,,217 km NNE from Sylhet,217KM NNE from Sylhet,,0,
+earthquakelist_api_strongest,29331,2021-04-18 13:24:33,2021-04-18,2021,4,22.5129,94.1955,5.1,24.7,,"61 km ESE of Hakha, Myanmar",,us6000e2mn,1,False
+earthquakelist_api_strongest,30892,2021-04-05 15:19:58,2021-04-05,2021,4,27.1863,88.9412,5.2,10.0,,"35 km NNW of Samtse, Bhutan",,us6000dz5d,161,False
+earthquakelist_api_strongest,47725,2020-12-08 05:14:35,2020-12-08,2020,12,22.2089,94.3877,5.1,90.8,,"77 km W of Monywa, Myanmar",,us7000cp2v,0,False
+earthquakelist_api_strongest,56195,2020-10-10 17:38:01,2020-10-10,2020,10,24.6661,93.4997,5.5,53.0,,"33 km WNW of Moir?ng, India",,us6000c7ce,87,green
+earthquakelist_api_strongest,58795,2020-09-20 01:59:06,2020-09-20,2020,9,22.9861,93.7677,5.1,53.6,,"12 km NE of Falam, Myanmar",,us7000bqcm,0,False
+earthquakelist_api_strongest,61185,2020-08-27 12:07:16,2020-08-27,2020,8,23.1636,93.3258,5.3,10.0,,"26 km E of North Vanlaiphai, India",,us7000bdnu,6,green
+earthquakelist_api_strongest,72870,2020-07-17 16:33:53,2020-07-17,2020,7,23.1162,93.3092,5.1,10.0,,"25 km E of North Vanlaiphai, India",,us7000aqg3,4,False
+earthquakelist_html,76466,2020-06-21 22:40:53,2020-06-21,2020,6,23.1449,93.2856,5.6,,,174 km ENE from Chattogram,174KM ENE from Chattogram,,0,
+earthquakelist_api_strongest,80213,2020-05-25 14:42:17,2020-05-25,2020,5,24.3856,93.9197,5.1,57.9,,"13 km SSW of Kakching, India",,us70009q28,68,False
+earthquakelist_html,86640,2020-04-16 11:45:24,2020-04-16,2020,4,22.8004,94.0292,5.9,,,231 km ENE from Chattogram,231KM ENE from Chattogram,,0,
+earthquakelist_api_strongest,95410,2020-02-08 12:47:02,2020-02-08,2020,2,26.3386,90.7847,5.0,10.0,,"10 km E of Abhay?puri, India",,us70007li1,37,False
+earthquakelist_api_strongest,117993,2019-08-18 06:28:35,2019-08-18,2019,8,24.0196,93.858,5.0,63.4,,"39 km SSE of Chur?ch?ndpur, India",,us600056lz,0,False
+earthquakelist_api_strongest,165357,2019-04-04 07:45:30,2019-04-04,2019,4,25.4467,94.4235,5.1,61.8,,"25 km SSW of Phek, India",,us2000ka3r,41,False
+earthquakelist_api_strongest,181827,2018-11-10 17:15:47,2018-11-10,2018,11,23.9724,93.3925,5.2,52.4,,"47 km E of Darlawn, India",,us1000hqbh,75,False
+earthquakelist_api_strongest,189713,2018-09-12 04:50:47,2018-09-12,2018,9,26.3711,90.1611,5.3,10.0,,"5 km NE of Sapatgr?m, India",,us2000hd8v,142,green
+earthquakelist_api_strongest,238363,2018-04-24 04:08:36,2018-04-24,2018,4,22.9621,94.6137,5.1,106.3,,"78 km SSE of Mawlaik, Myanmar",,us1000dr4k,11,False
+earthquakelist_api_strongest,251373,2017-12-28 20:23:34,2017-12-28,2017,12,22.0556,94.4044,5.0,85.4,,"75 km W of Monywa, Myanmar",,us1000bx9g,10,False
+earthquakelist_api_strongest,264594,2017-08-02 18:18:09,2017-08-02,2017,8,24.3214,93.6199,5.1,53.2,,"5 km WSW of Chur?ch?ndpur, India",,us2000a3r9,37,False
+earthquakelist_api_strongest,281293,2017-03-04 02:11:54,2017-03-04,2017,3,25.1865,94.6658,5.1,74.1,,"55 km SSE of Phek, India",,us100086x4,4,False
+earthquakelist_api_strongest,281929,2017-02-24 12:02:51,2017-02-24,2017,2,24.0437,93.4825,5.0,59.8,,"37 km SSW of Chur?ch?ndpur, India",,us20008m0e,16,False
+earthquakelist_api_strongest,285894,2017-01-03 18:49:54,2017-01-03,2017,1,23.3168,94.5035,5.1,88.6,,"37 km SSE of Mawlaik, Myanmar",,us10007phv,31,False
+earthquakelist_html,285936,2017-01-03 09:09:02,2017-01-03,2017,1,24.0151,92.0177,5.7,,,167 km ENE from Dhaka,167KM ENE from Dhaka,,0,
+earthquakelist_api_strongest,298890,2016-08-24 10:34:55,2016-08-24,2016,8,20.9228,94.569,6.8,82.0,,"26 km W of Chauk, Myanmar",,us10006gbf,300,yellow
+earthquakelist_api_strongest,595380,2016-05-12 07:54:12,2016-05-12,2016,5,24.5,94.43,5.0,10.0,,MYANMAR-INDIA BORDER REGION,,,0,False
+earthquakelist_api_strongest,312281,2016-04-05 07:42:24,2016-04-05,2016,4,25.7595,90.5452,5.0,10.0,,"38 km SE of Lakhipur, India",,us20005fj8,40,False
+earthquakelist_api_strongest,321417,2016-01-03 23:05:22,2016-01-03,2016,1,24.8036,93.6505,6.7,55.0,,"29 km W of Imph?l, India",,us10004b2n,666,orange

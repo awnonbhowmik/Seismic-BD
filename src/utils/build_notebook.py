@@ -179,8 +179,10 @@ for col in ["year","month","day","decade"]:
         df[col] = pd.to_numeric(df[col], errors="coerce").astype("Int64")
 df["inside_bangladesh"] = df["inside_bangladesh"].astype(bool)
 
-# Unique events only
-df_bmd = df[~df["duplicate_flag"].astype(bool)].copy()
+# Unique events only — v2 catalog uses duplicate_flag_v2 for the BST/UTC correction;
+# fall back to duplicate_flag if the v2 column is absent (e.g. v1 catalog loaded)
+_dup_col = "duplicate_flag_v2" if "duplicate_flag_v2" in df.columns else "duplicate_flag"
+df_bmd = df[~df[_dup_col].astype(bool)].copy()
 
 # ── earthquakelist.org supplementary data ─────────────────────────────────────
 df_el = pd.read_csv(DATA_DIR / "earthquakelist_scraped.csv", low_memory=False)

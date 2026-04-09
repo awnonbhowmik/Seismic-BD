@@ -24,7 +24,7 @@ import geopandas as gpd
 from shapely.geometry import Point
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-PROC_DIR     = PROJECT_ROOT / "data_processed"
+DATA_DIR = PROJECT_ROOT / "data"
 DATA_RAW     = PROJECT_ROOT / "data_raw"
 MAP_DIR      = PROJECT_ROOT / "outputs" / "maps"
 TBL_DIR      = PROJECT_ROOT / "outputs" / "tables"
@@ -50,7 +50,7 @@ DHAKA_LON  = 90.4125
 
 
 def load_data():
-    df = pd.read_csv(PROC_DIR / "master_catalog_spatial_v2.csv", low_memory=False)
+    df = pd.read_csv(DATA_DIR / "master_catalog_spatial_v2.csv", low_memory=False)
     _dup_col = "duplicate_flag_v2" if "duplicate_flag_v2" in df.columns else "duplicate_flag"
     df = df[~df[_dup_col].astype(bool)].copy()
     df["magnitude"]      = pd.to_numeric(df["magnitude"], errors="coerce")

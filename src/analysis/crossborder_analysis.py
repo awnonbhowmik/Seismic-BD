@@ -25,7 +25,7 @@ import numpy as np
 import pandas as pd
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-PROC_DIR     = PROJECT_ROOT / "data_processed"
+DATA_DIR = PROJECT_ROOT / "data"
 FIG_DIR      = PROJECT_ROOT / "outputs" / "figures"
 TBL_DIR      = PROJECT_ROOT / "outputs" / "tables"
 
@@ -44,7 +44,7 @@ plt.rcParams.update(STYLE)
 
 
 def load_catalog() -> pd.DataFrame:
-    df = pd.read_csv(PROC_DIR / "master_catalog_spatial_v2.csv", low_memory=False)
+    df = pd.read_csv(DATA_DIR / "master_catalog_spatial_v2.csv", low_memory=False)
     _dup_col = "duplicate_flag_v2" if "duplicate_flag_v2" in df.columns else "duplicate_flag"
     df = df[~df[_dup_col].astype(bool)].copy()
     df["magnitude"]         = pd.to_numeric(df["magnitude"],         errors="coerce")

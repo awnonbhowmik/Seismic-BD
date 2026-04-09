@@ -440,7 +440,7 @@ CELLS.append(md(r"""## 4. Catalog completeness
 | 1918–1999 | 27 | Sparse; only large historical events ($M \geq 5$ effectively) |
 | 2000–2006 | 0 | **Data gap** — NOT seismically quiet |
 | 2007–2022 | 776 | Modern instrument era; more systematic |
-| 2023–2025 | 314 | Multiple overlapping sources |
+| 2023–2025 | 308 | Multiple overlapping sources |
 
 **Key caution**: Count increases across decades reflect improved detection, NOT real seismicity increases.
 Only **magnitude-restricted** analyses ($M \geq 4.5$) are defensible across the full 1918–2025 span.
@@ -1107,9 +1107,9 @@ CELLS.append(md(r"""## 10. Research memo & paper direction
 | Finding | Value |
 |---------|-------|
 | Events inside Bangladesh | 107 (9.6\%) |
-| Events outside Bangladesh | 1011 (90.4\%) |
+| Events outside Bangladesh | 1005 (90.4\%) |
 | $M \geq 4$: \% external | 94.4\% |
-| Top source country | Myanmar (34.3\%) |
+| Top source country | Myanmar (34.2\%) |
 | Top source corridor | Myanmar--India Border (28.0\%) |
 | $b$-value (Aki MLE, $M_c=3$) | 0.27 (anomalously low; true $M_c \approx 3.5$--$4.0$) |
 | Largest event | $M\,8.8$ (2025 Myanmar) |

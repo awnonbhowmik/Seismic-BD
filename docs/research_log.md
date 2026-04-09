@@ -39,8 +39,8 @@ Discovered four source documents:
 
 ### Key analytic findings
 1. **90.4%** of unique events are outside Bangladesh. For M≥4.0: 94.4%.
-2. Myanmar dominates (383 events, 34.3%). India second (315, 28.2%).
-3. Myanmar-India Border corridor alone: 313 events (28.0%).
+2. Myanmar dominates (380 events, 34.2%). India second (314, 28.2%).
+3. Myanmar-India Border corridor alone: 311 events (28.0%).
 4. Domestic Bangladesh: 107 events (9.6%) — the 4th-largest source behind Myanmar, India, and distant/unmatched.
 5. G-R b-value (Aki MLE, Mc=3.0, 2007+): 0.267 — strongly indicates Mc > 3.0. Catalog incomplete below M~3.5.
 6. Seasonality chi-squared test: should be run in notebook to assess.

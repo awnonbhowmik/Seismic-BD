@@ -21,8 +21,6 @@
 | source_file | string | Original source document filename. |
 | source_period | string | Human-readable coverage period of the source file. |
 | catalog_type | string | Type of catalog entry: `historical_bst` (main catalog, BST time), `broader` (monthly: all detected), `felt_near_bangladesh` (monthly felt-nearby or modern felt files). |
-| duplicate_flag | bool | True = this row was identified as a probable duplicate of another row (same date, rounded coordinates, magnitude). The first/best occurrence is kept as False. |
-| dedup_key | string | Concatenated string used for deduplication: `date_lat_lon_magnitude` (rounded). |
 
 ---
 
@@ -83,6 +81,10 @@
 | parse_flags | string | Pipe-separated list of parsing issues encountered for this row. Empty = no issues. Examples: `time_missing_historical`, `date_typo_corrected:26-012014`, `lat_coord_missing`. |
 | distance_dhaka_km_raw | string | Raw "Distance from Dhaka (Km)" value from modern source files. Not available for main catalog. |
 | sl | string | Serial number from felt_2025 source file. Empty elsewhere. |
+| duplicate_flag | bool | v1 dedup flag. **Always False in master_catalog_spatial_v2.csv**: v1 duplicates (33 events identified by key-based matching) were removed before spatial enrichment and are not present in this file. Retained for schema compatibility. |
+| duplicate_flag_v2 | bool | v2 dedup flag. True = this row was identified as a BST/UTC midnight date-shift duplicate of another row (Stage 2 correction). 6 rows are True. Use `~duplicate_flag_v2` to select unique events. |
+| dedup_note_v2 | string | Human-readable explanation of why duplicate_flag_v2=True (e.g., matching event ID, BST/UTC date shift, clock delta). Empty when duplicate_flag_v2=False. |
+| dedup_key | string | Concatenated string used for v1 (Stage 1) key-based deduplication: `date_lat_lon_magnitude` (rounded). |
 
 ---
 

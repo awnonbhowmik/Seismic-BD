@@ -73,12 +73,14 @@ The v1 false-merge risk is **low** for the actual data.
 ### Stage A — Strong match (both UTC timestamps available)
 - |Δt| ≤ 60 min, dist ≤ 25 km, |ΔM| ≤ 0.3
 - Different source files only
+- **Result on this dataset: 0 new duplicates identified** (v1 key-based rule already captured all same-date matches; no cross-date UTC-timestamp pairs remained)
 
 ### Stage B — BST/UTC date-shift correction
 - One source is `historical_bst`; other is UTC-dated
 - BST_date = UTC_date + 1 day (midnight crossing)
 - BST_time − 6h ≈ UTC_time (within 15 min)
 - dist ≤ 25 km, |ΔM| ≤ 0.2
+- **Result: 6 new duplicates identified** in July 2023 overlap
 
 ### Stage C — Do not merge
 - Clock-time check fails (|Δ_clock| > 15 min)
@@ -113,10 +115,13 @@ No decade-level, corridor-level, or paper-level conclusion changes.
 
 ## 7. Methods section language
 
-> *'Events were deduplicated using a two-stage procedure.*
-> *Stage A matched records from different source files with both UTC timestamps*
-> *available: |Δt| ≤ 60 min, dist ≤ 25 km, |ΔM| ≤ 0.3.*
-> *Stage B corrected for BST/UTC date shift: {n_removed} events in the July 2023*
+> *'Events were deduplicated using a two-stage procedure applied to the spatially enriched*
+> *v1 catalog.*
+> *Stage A (strong UTC-timestamp match) screened all event pairs from different source files*
+> *that both carried a UTC timestamp: |Δt| ≤ 60 min, dist ≤ 25 km, |ΔM| ≤ 0.3.*
+> *No new duplicates were identified by Stage A; the v1 key-based rule had already*
+> *resolved all same-date, same-location pairs.*
+> *Stage B corrected for BST/UTC date shift: 6 events in the July 2023*
 > *overlap between the BST-dated main catalog and the UTC-dated monthly file*
 > *appeared on different calendar dates despite being the same physical earthquake.*
 > *These were identified by confirming that BST_time − 6h matched the monthly*

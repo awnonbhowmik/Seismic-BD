@@ -20,8 +20,8 @@ Key design decisions:
      (BST = UTC+6, so UTC = BST - 6h).
 
 Output:
-  data_processed/master_catalog.csv
-  data_processed/master_catalog.parquet
+  data/master_catalog_spatial_v2.csv
+  data/master_catalog_spatial_v2.parquet
   data_intermediate/dedup_report.txt
 """
 
@@ -32,8 +32,8 @@ import pandas as pd
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 INT_DIR  = PROJECT_ROOT / "data_intermediate"
-PROC_DIR = PROJECT_ROOT / "data_processed"
-PROC_DIR.mkdir(parents=True, exist_ok=True)
+DATA_DIR = PROJECT_ROOT / "data"
+DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 DHAKA_LAT = 23.8103
 DHAKA_LON = 90.4125
@@ -514,25 +514,22 @@ def main():
     save_dedup_report(df)
 
     # Save outputs
-    out_csv     = PROC_DIR / "master_catalog.csv"
-    out_parquet = PROC_DIR / "master_catalog.parquet"
+    out_csv     = DATA_DIR / "master_catalog_spatial_v2.csv"
+    out_parquet = DATA_DIR / "master_catalog_spatial_v2.parquet"
+
+    # Save only unique physical events as the canonical analysis dataset
+    df_unique = df[~df["duplicate_flag"]].copy()
 
     # Cast all object (mixed-type) columns to string for parquet compatibility
-    df_parquet = df.copy()
+    df_parquet = df_unique.copy()
     for col in df_parquet.select_dtypes(include=["object", "str"]).columns:
         df_parquet[col] = df_parquet[col].astype(str).replace("nan", "")
 
-    df.to_csv(out_csv, index=False, encoding="utf-8")
+    df_unique.to_csv(out_csv, index=False, encoding="utf-8")
     df_parquet.to_parquet(out_parquet, index=False)
 
     print(f"\n  Saved CSV     → {out_csv.relative_to(PROJECT_ROOT)}")
     print(f"  Saved Parquet → {out_parquet.relative_to(PROJECT_ROOT)}")
-
-    # Also save the unique-only version (primary research dataset)
-    df_unique = df[~df["duplicate_flag"]].copy()
-    out_unique_csv = PROC_DIR / "master_catalog_unique.csv"
-    df_unique.to_csv(out_unique_csv, index=False, encoding="utf-8")
-    print(f"  Saved unique  → {out_unique_csv.relative_to(PROJECT_ROOT)}")
 
     return df
 

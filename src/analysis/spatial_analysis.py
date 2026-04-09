@@ -49,6 +49,20 @@ DHAKA_LAT = 23.8103
 DHAKA_LON  = 90.4125
 
 
+def resolve_data_file(filename: str) -> Path:
+    """Resolve a data file from current or legacy repository layouts."""
+    candidates = [
+        DATA_DIR / filename,
+        DATA_RAW / filename,
+    ]
+    for path in candidates:
+        if path.exists():
+            return path
+    raise FileNotFoundError(
+        f"Could not find '{filename}'. Checked: {', '.join(str(p) for p in candidates)}"
+    )
+
+
 def load_data():
     df = pd.read_csv(DATA_DIR / "master_catalog_spatial_v2.csv", low_memory=False)
     _dup_col = "duplicate_flag_v2" if "duplicate_flag_v2" in df.columns else "duplicate_flag"
@@ -59,8 +73,8 @@ def load_data():
     df["longitude"]      = pd.to_numeric(df["longitude"], errors="coerce")
     df["inside_bangladesh"] = df["inside_bangladesh"].astype(bool)
 
-    world = gpd.read_file(DATA_RAW / "world_countries.gpkg").to_crs("EPSG:4326")
-    bd    = gpd.read_file(DATA_RAW / "bangladesh_boundary.gpkg").to_crs("EPSG:4326")
+    world = gpd.read_file(resolve_data_file("world_countries.gpkg")).to_crs("EPSG:4326")
+    bd    = gpd.read_file(resolve_data_file("bangladesh_boundary.gpkg")).to_crs("EPSG:4326")
     return df, world, bd
 
 

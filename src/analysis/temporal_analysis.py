@@ -235,7 +235,7 @@ def fig_decade_magnitude_box(df: pd.DataFrame):
     labels = [f"{int(d)}s" for d in decades]
 
     fig, ax = plt.subplots(figsize=(10, 5))
-    bp = ax.boxplot(data_by_decade, labels=labels, patch_artist=True,
+    bp = ax.boxplot(data_by_decade, tick_labels=labels, patch_artist=True,
                     medianprops=dict(color="black", lw=2))
 
     colors = ["#b3cde3", "#8db6cd", "#4e8fbd"][:len(decades)]

@@ -1,0 +1,3 @@
+version,n_unique_events,n_inside_bd,n_outside_bd,pct_outside_bd,n_m_ge_4,n_m_ge_5,n_m_ge_6,pct_outside_m4,top_corridor,top_country,n_2020,n_2021,n_2022,n_2023,n_2024,n_2025
+v1 (original),1118,107,1011,90.43,949,315,58,94.42,Myanmar_India_Border,Myanmar,71,82,79,130,114,70
+v2 (improved),1112,107,1005,90.38,943,314,58,94.38,Myanmar_India_Border,Myanmar,71,82,79,124,114,70

@@ -163,11 +163,19 @@ def load_felt_2025() -> pd.DataFrame:
 
 # ── Deduplication ──────────────────────────────────────────────────────────────
 
+# Thresholds for the v2 two-stage dedup (see docs/dedup_audit.md for full rationale)
+_DEDUP_DIST_KM   = 25    # maximum epicentre separation to consider a duplicate
+_DEDUP_DMAG_B    = 0.20  # maximum |ΔM| for Stage B (BST/UTC date-shift correction)
+_DEDUP_CLOCK_M   = 15    # maximum clock-time mismatch for Stage B (minutes)
+
+
 def dedup_key(df: pd.DataFrame, lat_tol: float = 0.1, lon_tol: float = 0.1) -> pd.Series:
     """
-    Create a deduplication key from rounded date, lat, lon, magnitude.
-    Two events are considered duplicates if they share the same date,
-    rounded lat/lon (within tolerance), and magnitude (rounded to 1dp).
+    v1 dedup key: (date_iso, rounded lat, rounded lon, rounded magnitude).
+    Kept for reference and as the fallback key column in the output catalog.
+
+    KNOWN LIMITATION: does not handle BST/UTC midnight date shift.
+    Use apply_v2_dedup() after this for the corrected duplicate flags.
     """
     lat_r = (df["latitude"]  / lat_tol).round(0) * lat_tol
     lon_r = (df["longitude"] / lon_tol).round(0) * lon_tol
@@ -181,6 +189,143 @@ def dedup_key(df: pd.DataFrame, lat_tol: float = 0.1, lon_tol: float = 0.1) -> p
         + "_"
         + mag_r.fillna(-9).astype(str)
     )
+
+
+def _haversine_km(lat1, lon1, lat2, lon2):
+    """Vectorised Haversine distance (arrays → km)."""
+    R = 6371.0
+    phi1, phi2 = np.radians(lat1), np.radians(lat2)
+    dphi = np.radians(lat2 - lat1)
+    dlam = np.radians(lon2 - lon1)
+    a = np.sin(dphi / 2) ** 2 + np.cos(phi1) * np.cos(phi2) * np.sin(dlam / 2) ** 2
+    return 2 * R * np.arcsin(np.sqrt(a))
+
+
+def _bst_time_to_minutes(time_str) -> float:
+    """Parse HH:MM:SS BST string → minutes since midnight. Returns NaN if unparseable."""
+    try:
+        t = pd.to_datetime(f"2000-01-01 {str(time_str).strip()}", errors="coerce")
+        if pd.isna(t):
+            return np.nan
+        return t.hour * 60 + t.minute + t.second / 60
+    except Exception:
+        return np.nan
+
+
+def apply_v2_dedup(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Two-stage improved deduplication (v2).  Applied after the v1 key-based pass.
+
+    Stage A — Strong match (both datetime_utc available):
+        |Δt| ≤ 60 min  AND  dist ≤ 25 km  AND  |ΔM| ≤ 0.3
+        → definitive cross-file duplicate; mark lower-rank source as duplicate.
+
+    Stage B — BST/UTC midnight date-shift correction:
+        Source pair: (historical_bst, UTC-dated modern file)
+        BST_date = UTC_date + 1 day  (event at 00:00–05:59 BST → previous UTC day)
+        BST_time − 6h ≈ UTC_time  (within _DEDUP_CLOCK_M minutes)
+        dist ≤ _DEDUP_DIST_KM km  AND  |ΔM| ≤ _DEDUP_DMAG_B
+        → mark the BST-dated main-catalog entry as duplicate; keep modern record.
+
+    Stage C — Do NOT merge:
+        Clock-time check fails  →  genuinely distinct events despite proximity.
+
+    Background: the July 2023 overlap between the BST-dated main catalog and the
+    UTC-dated monthly file produces 6 double-counted events.  The v1 key misses
+    these because they have different date_iso values (BST vs UTC calendar day).
+    See docs/dedup_audit.md for full audit results and rationale.
+    """
+    SOURCE_RANK = {
+        "Seismic Data of Bangladesh-2023x.doc":                       1,
+        "মাসিক ডাটা ২৩-২৪.docx":                                     2,
+        "Bangladesh felt Data_January 2024-24 January 2025.docx":     3,
+        "Bangladesh fell Data 2025(January-(August).docx":            4,
+    }
+
+    df = df.copy()
+    df["datetime_utc"] = pd.to_datetime(df["datetime_utc"], errors="coerce")
+    df["date_dt"]      = pd.to_datetime(df["date_iso"],      errors="coerce")
+
+    already_dup = set(df.index[df["duplicate_flag"]])  # flagged by v1
+
+    # Work only on non-duplicate rows from v1
+    active = df[~df["duplicate_flag"]].copy().reset_index()
+    active.rename(columns={"index": "orig_idx"}, inplace=True)
+
+    new_dup_orig_indices = set()
+
+    # ── Stage B: BST/UTC date-shift ────────────────────────────────────────────
+    bst_mask = active["catalog_type"] == "historical_bst"
+    bst_rows = active[bst_mask].copy()
+    utc_rows = active[~bst_mask].copy()
+
+    bst_rows["bst_min"] = bst_rows["time_bst"].apply(_bst_time_to_minutes)
+    bst_rows["date_int"] = bst_rows["date_dt"].dt.to_period("D").astype("int64")
+    utc_rows["date_int"] = utc_rows["date_dt"].dt.to_period("D").astype("int64")
+
+    has_utc_time = utc_rows["datetime_utc"].notna()
+    utc_rows["utc_min"] = np.nan
+    if has_utc_time.any():
+        utc_rows.loc[has_utc_time, "utc_min"] = (
+            utc_rows.loc[has_utc_time, "datetime_utc"].dt.hour * 60
+            + utc_rows.loc[has_utc_time, "datetime_utc"].dt.minute
+            + utc_rows.loc[has_utc_time, "datetime_utc"].dt.second / 60
+        )
+
+    # Cross-join on BST_date = UTC_date + 1 day
+    for day_shift in [1, 0]:
+        bst_j = bst_rows.copy(); bst_j["join_date"] = bst_j["date_int"] - day_shift
+        utc_j = utc_rows.copy(); utc_j["join_date"] = utc_j["date_int"]
+
+        pairs = pd.merge(bst_j, utc_j, on="join_date", suffixes=("_b", "_u"))
+        if len(pairs) == 0:
+            continue
+
+        # Distance filter
+        pairs["dist_km"] = _haversine_km(
+            pairs["latitude_b"].values, pairs["longitude_b"].values,
+            pairs["latitude_u"].values, pairs["longitude_u"].values,
+        )
+        pairs = pairs[pairs["dist_km"] <= _DEDUP_DIST_KM]
+        if len(pairs) == 0:
+            continue
+
+        # Magnitude filter
+        pairs["dmag"] = (pairs["magnitude_b"] - pairs["magnitude_u"]).abs()
+        pairs = pairs[pairs["dmag"] <= _DEDUP_DMAG_B]
+        if len(pairs) == 0:
+            continue
+
+        # Skip same source file
+        pairs = pairs[pairs["source_file_b"] != pairs["source_file_u"]]
+        if len(pairs) == 0:
+            continue
+
+        # Clock-time consistency check (only when both times are available)
+        has_both = pairs["bst_min_b"].notna() & pairs["utc_min_u"].notna()
+        pairs["clock_delta_min"] = np.nan
+        if has_both.any():
+            bst_as_utc = (pairs.loc[has_both, "bst_min_b"] - 360.0) % 1440
+            diff = (bst_as_utc - pairs.loc[has_both, "utc_min_u"]).abs()
+            diff = diff.where(diff <= 720, 1440 - diff)
+            pairs.loc[has_both, "clock_delta_min"] = diff
+
+        # Confirm: BST hour < 6 (midnight crossing), day_shift==1, clock within tolerance
+        confirmed = pairs[
+            (pairs["bst_min_b"] / 60 < 6.0)
+            & (pairs["clock_delta_min"].isna() | (pairs["clock_delta_min"] <= _DEDUP_CLOCK_M))
+        ]
+
+        for _, p in confirmed.iterrows():
+            oi = int(p["orig_idx_b"])  # BST main-catalog row → mark as duplicate
+            if oi not in new_dup_orig_indices:
+                new_dup_orig_indices.add(oi)
+
+    # Apply Stage B flags
+    if new_dup_orig_indices:
+        df.loc[list(new_dup_orig_indices), "duplicate_flag"] = True
+
+    return df
 
 
 # ── Master assembly ────────────────────────────────────────────────────────────
@@ -283,7 +428,7 @@ def build_master() -> pd.DataFrame:
         DHAKA_LON,
     ).round(1)
 
-    # Deduplication
+    # ── Stage 1: v1 key-based dedup ───────────────────────────────────────────
     df_all["dedup_key"] = dedup_key(df_all)
 
     # Sort so that higher _source_rank (more modern / curated) comes first within each key
@@ -292,10 +437,21 @@ def build_master() -> pd.DataFrame:
     # Mark duplicates: first occurrence (highest rank) is kept; others are flagged
     df_all["duplicate_flag"] = df_all.duplicated(subset=["dedup_key"], keep="first")
 
-    n_dups = df_all["duplicate_flag"].sum()
+    n_dups_v1 = df_all["duplicate_flag"].sum()
     print(f"\n  Total rows before dedup: {len(df_all)}")
-    print(f"  Duplicate rows flagged:  {n_dups}")
-    print(f"  Unique events:           {len(df_all) - n_dups}")
+    print(f"  Stage 1 (v1 key) duplicates:  {n_dups_v1}")
+
+    # ── Stage 2: v2 BST/UTC date-shift correction ──────────────────────────────
+    # Catches events where BST date ≠ UTC date (00:00–05:59 BST → previous UTC day).
+    # The July 2023 overlap between the main catalog (BST) and monthly file (UTC)
+    # produces 6 such pairs.  See docs/dedup_audit.md for full audit.
+    df_all = apply_v2_dedup(df_all)
+
+    n_dups = df_all["duplicate_flag"].sum()
+    n_stage2 = n_dups - n_dups_v1
+    print(f"  Stage 2 (BST/UTC shift) additional:  {n_stage2}")
+    print(f"  Total duplicate rows flagged:  {n_dups}")
+    print(f"  Unique events:                 {len(df_all) - n_dups}")
 
     # Build event_id (for non-duplicates, assign sequential ID)
     df_all = df_all.reset_index(drop=True)

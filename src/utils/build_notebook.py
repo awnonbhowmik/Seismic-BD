@@ -169,7 +169,7 @@ print("Setup complete. LaTeX rendering enabled.")
 # ══════════════════════════════════════════════════════════════════════════════
 CELLS.append(md("## 2. Load & merge catalogs"))
 CELLS.append(code("""# ── BMD master catalog ────────────────────────────────────────────────────────
-df = pd.read_csv(DATA_DIR / "master_catalog_spatial.csv", low_memory=False)
+df = pd.read_csv(DATA_DIR / "master_catalog_spatial_v2.csv", low_memory=False)
 
 for col in ["magnitude","latitude","longitude","distance_dhaka_km","depth_km","distance_bd_border_km"]:
     if col in df.columns:

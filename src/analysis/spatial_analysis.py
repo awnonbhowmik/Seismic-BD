@@ -50,8 +50,9 @@ DHAKA_LON  = 90.4125
 
 
 def load_data():
-    df = pd.read_csv(PROC_DIR / "master_catalog_spatial.csv", low_memory=False)
-    df = df[df["duplicate_flag"] == False].copy()
+    df = pd.read_csv(PROC_DIR / "master_catalog_spatial_v2.csv", low_memory=False)
+    _dup_col = "duplicate_flag_v2" if "duplicate_flag_v2" in df.columns else "duplicate_flag"
+    df = df[~df[_dup_col].astype(bool)].copy()
     df["magnitude"]      = pd.to_numeric(df["magnitude"], errors="coerce")
     df["year"]           = pd.to_numeric(df["year"], errors="coerce").astype("Int64")
     df["latitude"]       = pd.to_numeric(df["latitude"], errors="coerce")

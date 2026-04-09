@@ -15,7 +15,7 @@ Output:
   data/earthquakelist_depth_patch.csv -- subset matching BMD catalog events (for depth enrichment)
 
 NOTE: This is a supplementary source, NOT a replacement for the BMD catalog.
-The BMD catalog (1918–2025, 1118 events) is far more comprehensive historically.
+The BMD catalog (1918–2025, 1112 events) is far more comprehensive historically.
 This source adds depth data for ~45 recent events and enables USGS cross-validation.
 """
 

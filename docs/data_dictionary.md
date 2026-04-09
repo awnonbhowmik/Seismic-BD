@@ -1,4 +1,4 @@
-# Data Dictionary — Bangladesh Earthquake Catalog (master_catalog_spatial.csv)
+# Data Dictionary — Bangladesh Earthquake Catalog (master_catalog_spatial_v2.csv)
 
 ## Source files
 
@@ -11,7 +11,7 @@
 
 ---
 
-## Schema — master_catalog_spatial.csv
+## Schema — master_catalog_spatial_v2.csv
 
 ### Identity fields
 
@@ -114,7 +114,7 @@ Corridors are heuristic bounding-box approximations of seismotectonic source zon
 2. **Coordinate conversion**: Degrees + decimal minutes → decimal degrees. Formula: `DD = deg + mts/60`.
 3. **Date parsing**: Main catalog: `DD-MM-YYYY` or `DD/MM/YYYY`. Modern files: `DD/MM/YYYY`. One OCR typo corrected (`26-012014` → `2014-01-26`).
 4. **Time zone**: Main catalog times are BST (UTC+6); UTC = BST - 6h.
-5. **Deduplication**: Events matched on (date, lat rounded to 0.1°, lon rounded to 0.1°, magnitude rounded to 1dp). 33 duplicates flagged.
+5. **Deduplication (v2)**: Two-stage procedure. Stage 1: key-based match on (date, lat ±0.1°, lon ±0.1°, magnitude ±0.05) — 33 duplicates flagged. Stage 2: BST/UTC midnight date-shift correction — 6 additional duplicates identified in July 2023 overlap (main catalog BST-dated vs monthly UTC-dated). Total: 39 duplicates removed, 1112 unique events retained. See `docs/dedup_audit.md`.
 6. **Spatial enrichment**: Boundary test and spatial join using Natural Earth 10m admin-0 boundaries.
 7. **Corridor classification**: Priority-ordered bounding-box assignment, then overridden by inside_bangladesh test.
 

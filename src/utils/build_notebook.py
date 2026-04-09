@@ -27,7 +27,7 @@ CELLS.append(md("""# Bangladesh Earthquake Catalog — Research Analysis
 
 **Data**: Bangladesh Meteorological Department (BMD), 1918–2025
 **Supplement**: earthquakelist.org scrape (2016–2026, depth & USGS codes)
-**Unique events**: 1,118 (BMD master) + 100 supplementary
+**Unique events**: 1,112 (BMD master, v2 dedup) + 100 supplementary
 
 ## Structure
 1. Setup & imports
@@ -339,7 +339,7 @@ audit = pd.DataFrame({
     r"$\%$ missing":  [round(df_bmd[c].isna().mean()*100, 1) for c in key_cols],
 }).set_index("Variable")
 
-show_table(audit, "Table 1 — Data Quality Audit (BMD unique events, N = 1,118)", 1)
+show_table(audit, "Table 1 — Data Quality Audit (BMD unique events, N = 1,112)", 1)
 
 # ── Table 2: Events by source file ────────────────────────────────────────────
 src_tbl = (

@@ -26,8 +26,10 @@ Discovered four source documents:
 
 ### Deduplication
 - 1151 total rows across all sources.
-- 33 duplicates flagged (2.9%).
-- 1118 unique events retained.
+- 33 duplicates flagged by v1 key-based rule (2.9%).
+- v2 audit (see docs/dedup_audit.md) identified 6 additional missed duplicates:
+  BST/UTC midnight date-shift in July 2023 main catalog / monthly overlap.
+- **1112 unique events retained** (v2 dedup, corrected catalog).
 - Overlap concentrated at: monthly 2023-2024 / felt 2024-2025 boundary (Jan 2024).
 
 ### Spatial enrichment decisions

@@ -24,7 +24,8 @@ pip install -r requirements.txt
 
 | File | Description |
 |------|-------------|
-| `data/master_catalog_spatial.csv` | **Primary analysis dataset** — 1118 unique events, 1918–2025, with spatial enrichment |
+| `data/master_catalog_spatial_v2.csv` | **Primary analysis dataset** — 1112 unique events, 1918–2025, with spatial enrichment (v2 dedup: BST/UTC corrected) |
+| `data/master_catalog_spatial.csv` | v1 catalog (1118 events) — retained for comparison; use v2 for analysis |
 | `data/earthquakelist_scraped.csv` | Supplementary scrape from earthquakelist.org — 100 events (2016–2026), includes depth & USGS codes |
 | `data/bangladesh_boundary.gpkg` | Bangladesh admin boundary (Natural Earth 10m) |
 | `data/world_countries.gpkg` | World countries (Natural Earth 10m) |
@@ -77,7 +78,8 @@ python src/utils/build_notebook.py
 Seismic-BD/
 ├── analysis.ipynb                    Main analysis notebook (10 sections, 10 figures)
 ├── data/
-│   ├── master_catalog_spatial.csv    PRIMARY DATASET (1118 unique events, 1918–2025)
+│   ├── master_catalog_spatial_v2.csv PRIMARY DATASET (1112 unique events, 1918–2025, v2 dedup)
+│   ├── master_catalog_spatial.csv    v1 catalog (1118 events, retained for comparison)
 │   ├── earthquakelist_scraped.csv    Supplementary (100 events, depth + USGS codes)
 │   ├── bangladesh_boundary.gpkg      Bangladesh admin boundary
 │   └── world_countries.gpkg          World countries boundary
@@ -101,10 +103,10 @@ Seismic-BD/
 
 | Finding | Value |
 |---------|-------|
-| Total unique events | 1118 |
+| Total unique events | 1112 (v2 dedup) |
 | Year range | 1918–2025 |
 | Events inside Bangladesh | 107 (9.6%) |
-| Events outside Bangladesh | 1011 (90.4%) |
+| Events outside Bangladesh | 1005 (90.4%) |
 | M≥4.0 outside Bangladesh | 94.4% |
 | Top source country | Myanmar (34.3%) |
 | Top source corridor | Myanmar-India Border (28.0%) |

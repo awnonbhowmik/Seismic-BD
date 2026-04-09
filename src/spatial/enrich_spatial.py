@@ -27,7 +27,9 @@ from shapely.geometry import Point
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 PROC_DIR     = PROJECT_ROOT / "data_processed"
+DATA_DIR     = PROJECT_ROOT / "data"
 DATA_RAW     = PROJECT_ROOT / "data_raw"
+PROC_DIR.mkdir(parents=True, exist_ok=True)
 
 DHAKA_LAT = 23.8103
 DHAKA_LON = 90.4125
@@ -77,8 +79,16 @@ def assign_source_corridor(lat: float, lon: float) -> str:
 
 def load_boundaries():
     """Load Bangladesh boundary and world country boundaries."""
-    bd_path    = DATA_RAW / "bangladesh_boundary.gpkg"
-    world_path = DATA_RAW / "world_countries.gpkg"
+    candidates_bd = [DATA_DIR / "bangladesh_boundary.gpkg", DATA_RAW / "bangladesh_boundary.gpkg"]
+    candidates_world = [DATA_DIR / "world_countries.gpkg", DATA_RAW / "world_countries.gpkg"]
+
+    bd_path = next((p for p in candidates_bd if p.exists()), None)
+    world_path = next((p for p in candidates_world if p.exists()), None)
+    if bd_path is None or world_path is None:
+        raise FileNotFoundError(
+            "Boundary data not found. Checked: "
+            f"{', '.join(str(p) for p in candidates_bd + candidates_world)}"
+        )
 
     bd_gdf    = gpd.read_file(bd_path).to_crs("EPSG:4326")
     world_gdf = gpd.read_file(world_path).to_crs("EPSG:4326")
@@ -97,6 +107,7 @@ def points_in_bangladesh(df: pd.DataFrame, bd_poly) -> pd.Series:
         pts = gpd.GeoSeries(
             [Point(lon, lat) if pd.notna(lon) and pd.notna(lat) else None
              for lat, lon in zip(df["latitude"], df["longitude"])],
+            index=df.index,
             crs="EPSG:4326",
         )
         result[has_coord] = pts[has_coord].apply(
@@ -179,7 +190,20 @@ def distance_to_bd_border(lat: float, lon: float, bd_poly) -> float:
 
 def main():
     print("Loading master catalog...")
-    df = pd.read_csv(PROC_DIR / "master_catalog_unique.csv", low_memory=False)
+    input_candidates = [
+        PROC_DIR / "master_catalog_unique.csv",
+        DATA_DIR / "master_catalog_spatial_v2.csv",
+    ]
+    input_path = next((p for p in input_candidates if p.exists()), None)
+    if input_path is None:
+        raise FileNotFoundError(
+            f"No catalog found. Checked: {', '.join(str(p) for p in input_candidates)}"
+        )
+
+    df = pd.read_csv(input_path, low_memory=False)
+    dup_col = "duplicate_flag_v2" if "duplicate_flag_v2" in df.columns else "duplicate_flag"
+    if dup_col in df.columns:
+        df = df[~df[dup_col].astype(bool)].copy()
     print(f"  Events: {len(df)}")
 
     print("\nLoading boundary data...")

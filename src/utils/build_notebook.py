@@ -219,6 +219,34 @@ for idx, row in df_bmd[df_bmd["depth_km"].isna() & df_bmd["latitude"].notna()].i
         df_bmd.at[idx, "depth_km"] = depth
 n_depth_after = df_bmd["depth_km"].notna().sum()
 
+# ── Resolve "Unknown" epicenter_country for oceanic events ────────────────────
+# The Natural Earth admin-0 spatial join in enrich_spatial.py returns "Unknown"
+# for epicentres that fall outside any land polygon (open ocean, straits, etc.).
+# These 98 events are not genuinely unattributable — their source_corridor gives
+# a well-defined geographic context.  We remap them here so that downstream
+# tables (Table 6, Fig 8) display meaningful geographic labels instead of the
+# uninformative string "Unknown".
+#
+# Mapping logic:
+#   Bay_of_Bengal   → "Bay of Bengal"           (33 events, 10–22°N / 85–94°E)
+#   Andaman_Nicobar → "Andaman & Nicobar Is."   (15 events; arc administered by India)
+#   SE_Asia_Far     → "SE Asia (offshore)"       (23 events; Sumatra/Java offshore)
+#   Other_Distant   → "International Waters"     (26 events; varied distant ocean)
+#   residual Unknown corridor → "International Waters"  (1 event)
+_OCEAN_LABEL = {
+    "Bay_of_Bengal":   "Bay of Bengal",
+    "Andaman_Nicobar": "Andaman \\& Nicobar Is.",
+    "SE_Asia_Far":     "SE Asia (offshore)",
+    "Other_Distant":   "International Waters",
+}
+_mask_unk = df_bmd["epicenter_country"] == "Unknown"
+df_bmd.loc[_mask_unk, "epicenter_country"] = (
+    df_bmd.loc[_mask_unk, "source_corridor"]
+          .map(_OCEAN_LABEL)
+          .fillna("International Waters")
+)
+print(f"  Resolved 'Unknown' epicenter_country: {_mask_unk.sum()} events remapped via corridor.")
+
 # Working subsets
 df_mod  = df_bmd[df_bmd["year"] >= 2007].copy()
 df_hist = df_bmd[df_bmd["year"] <  2000].copy()
@@ -323,6 +351,45 @@ usgs = df_el[df_el["usgs_code"].notna()]
 print(f"\nUSGS cross-validation:")
 print(f"  Events with USGS code: {len(usgs)}/{len(df_el)}")
 print(f"  Magnitude range (matched): {usgs.magnitude.min():.1f} - {usgs.magnitude.max():.1f}")
+"""))
+
+# ── Markdown note: oceanic event attribution ──────────────────────────────────
+CELLS.append(md(r"""### Note on oceanic epicentre attribution
+
+The `epicenter_country` field is produced by a spatial join of each event's
+epicentre with Natural Earth 10 m admin-0 land polygons. Points that fall in
+**open water** — the Bay of Bengal, the Andaman Sea, the Indian Ocean, or
+distant ocean basins — are not matched to any polygon and therefore receive
+the label "Unknown" from the spatial join.
+
+Ninety-eight events (8.8 %) fall into this category. They are not missing
+data; their geographic context is well characterised by the
+`source_corridor` field, which is assigned via priority-ordered bounding
+boxes calibrated to seismotectonic source zones. The table below summarises
+the four groups and the label each receives in the catalog:
+
+| Corridor | Remapped label | N events | Geographic context |
+|---|---|---|---|
+| `Bay_of_Bengal` | Bay of Bengal | 33 | Offshore seismicity in the northern Indian Ocean (10–22°N, 85–94°E); associated with the Indo-Burman subduction interface and oceanic transform faults |
+| `Andaman_Nicobar` | Andaman \& Nicobar Is. | 15 | The Andaman–Nicobar arc, politically administered by India; high seismicity due to the Sunda subduction zone |
+| `SE_Asia_Far` | SE Asia (offshore) | 23 | Offshore Sumatra, Java, and the Sunda arc; large-magnitude events that are felt in Bangladesh at great distances |
+| `Other_Distant` | International Waters | 26 | Scattered distant oceanic events including central Indian Ocean, Arabian Sea, and East Asian seas; included because they were felt in Bangladesh or recorded by BMD |
+
+**Important caveats:**
+
+1. The Andaman \& Nicobar remapping is unambiguous — the arc is administered
+   by India and the events clearly plot on the arc. The other three groups
+   are open-ocean attributions, not country attributions.
+
+2. "Bay of Bengal" is a geographic descriptor, not a country. For analyses
+   that require country-level attribution (e.g., bilateral policy frameworks),
+   events in this group should be treated as unattributed or separated by
+   territorial waters (a determination requiring a more detailed shapefile
+   than Natural Earth 10 m).
+
+3. This remapping is applied **at notebook load time only** and does not
+   modify the source CSV. The canonical `master_catalog_spatial_v2.csv`
+   retains "Unknown" so that the spatial join outcome is preserved for audit.
 """))
 
 # ══════════════════════════════════════════════════════════════════════════════

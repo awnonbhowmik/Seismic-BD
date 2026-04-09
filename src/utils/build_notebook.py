@@ -321,15 +321,18 @@ ax.set_ylabel(r"Focal depth (km)")
 ax.set_title(r"\textbf{(b)} Depth vs.\ magnitude", fontweight="bold")
 ax.invert_yaxis()
 
-# Zone labels inside the plot (on the band, not the margin — large, visible)
-ax.text(0.02, 0.30, rf"Crustal  $<70$ km  ($n={n_crustal}$)",
-        ha="left", va="center", transform=ax.transAxes,
-        fontsize=FS, color=DEEP_PAL["Crustal"], fontweight="bold",
-        bbox=dict(boxstyle="round,pad=0.3", fc="white", alpha=0.75, ec="none"))
-ax.text(0.02, 0.72, rf"Intermediate  $\geq70$ km  ($n={n_inter}$)",
-        ha="left", va="center", transform=ax.transAxes,
-        fontsize=FS, color=DEEP_PAL["Intermediate"], fontweight="bold",
-        bbox=dict(boxstyle="round,pad=0.3", fc="white", alpha=0.75, ec="none"))
+# Zone labels — placed on the right side (high-magnitude end) where dot density
+# is low, avoiding overlap with the scatter cloud.
+# y-axis is inverted: shallow (crustal) is at the TOP of the plot, so crustal
+# label goes near axes y=0.88; intermediate near axes y=0.18.
+ax.text(0.98, 0.88, rf"Crustal  $<70$ km  ($n={n_crustal}$)",
+        ha="right", va="center", transform=ax.transAxes,
+        fontsize=FS-1, color=DEEP_PAL["Crustal"], fontweight="bold",
+        bbox=dict(boxstyle="round,pad=0.3", fc="white", alpha=0.85, ec="none"))
+ax.text(0.98, 0.18, rf"Intermediate  $\geq70$ km  ($n={n_inter}$)",
+        ha="right", va="center", transform=ax.transAxes,
+        fontsize=FS-1, color=DEEP_PAL["Intermediate"], fontweight="bold",
+        bbox=dict(boxstyle="round,pad=0.3", fc="white", alpha=0.85, ec="none"))
 
 ax.get_legend().remove()   # info already in zone labels
 
@@ -559,9 +562,10 @@ ax.legend(framealpha=0.92)
 
 chi2, p = chisquare(monthly_c.values, f_exp=np.full(12, monthly_c.sum()/12))
 sig_str = r"no significant seasonality" if p > 0.05 else r"significant seasonality"
-ax.text(0.97, 0.97,
+# Place annotation below the mean line at bottom-right to avoid bar overlap
+ax.text(0.97, 0.08,
         rf"$\chi^2 = {chi2:.1f}$,  $p = {p:.3f}$" + "\n" + rf"({sig_str})",
-        ha="right", va="top", transform=ax.transAxes, fontsize=FS,
+        ha="right", va="bottom", transform=ax.transAxes, fontsize=FS-1,
         bbox=dict(boxstyle="round,pad=0.4", fc="white", ec="#cccccc", alpha=0.92))
 
 plt.tight_layout()

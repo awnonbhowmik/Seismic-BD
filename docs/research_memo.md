@@ -17,7 +17,7 @@ The BMD catalog is real and usable but has pronounced era effects that make dire
 | 1918–1999 | 27 | Sparse historical record; only significant events (M≥5 effectively) |
 | 2000–2006 | 0 | Clear reporting/digitisation gap — NOT seismically quiet |
 | 2007–2022 | 776 | Modern instrument era; more systematic; felt-in-BD threshold |
-| 2023–2025 | 314 | Multiple overlapping sources; densest coverage |
+| 2023–2025 | 308 | Multiple overlapping sources; densest coverage |
 
 **Implication**: Any count-trend analysis spanning the 2000–2006 gap is invalid. Count increases from 1990s to 2010s are entirely explained by detection improvements, not increased seismicity.
 
@@ -28,9 +28,9 @@ This is the **single strongest finding** from this dataset:
 | Magnitude threshold | N events | Inside BD | Outside BD |
 |---------------------|----------|-----------|------------|
 | All | 1112 | 107 (9.6%) | 1005 (90.4%) |
-| M ≥ 3.0 | 1102 | 95 (8.6%) | 1007 (91.4%) |
-| M ≥ 4.0 | 949 | 53 (5.6%) | 896 (94.4%) |
-| M ≥ 5.0 | 315 | 6 (1.9%) | 309 (98.1%) |
+| M ≥ 3.0 | 1096 | 95 (8.7%) | 1001 (91.3%) |
+| M ≥ 4.0 | 943 | 53 (5.6%) | 890 (94.4%) |
+| M ≥ 5.0 | 314 | 6 (1.9%) | 308 (98.1%) |
 | M ≥ 6.0 | 58 | 3 (5.2%) | 55 (94.8%) |
 | M ≥ 7.0 | 21 | 3 (14.3%) | 18 (85.7%) |
 
@@ -39,16 +39,16 @@ This is the **single strongest finding** from this dataset:
 ### 1.3 Source region composition
 
 Top epicentre countries in catalog:
-1. Myanmar: 383 events (34.3%)
-2. India: 315 events (28.2%)
+1. Myanmar: 380 events (34.2%)
+2. India: 314 events (28.2%)
 3. Bangladesh (domestic): 107 events (9.6%)
 4. Unmatched (oceanic / remote): 98 events (8.8%)
-5. China (distant): 91 events (8.1%)
+5. China (distant): 89 events (8.0%)
 6. Nepal: 70 events (6.3%)
 
 Top source corridors:
-1. Myanmar-India Border: 313 events (28.0%)
-2. Assam-Meghalaya: 161 events (14.4%)
+1. Myanmar-India Border: 311 events (28.0%)
+2. Assam-Meghalaya: 160 events (14.4%)
 3. Myanmar Interior: 115 events (10.3%)
 4. BD Domestic: 107 events (9.6%)
 5. Nepal-Himalaya: 105 events (9.4%)

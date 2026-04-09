@@ -214,21 +214,17 @@ def _bst_time_to_minutes(time_str) -> float:
 
 def apply_v2_dedup(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Two-stage improved deduplication (v2).  Applied after the v1 key-based pass.
+    Stage 2 BST/UTC date-shift correction.  Applied after the v1 key-based pass (Stage 1).
 
-    Stage A — Strong match (both datetime_utc available):
-        |Δt| ≤ 60 min  AND  dist ≤ 25 km  AND  |ΔM| ≤ 0.3
-        → definitive cross-file duplicate; mark lower-rank source as duplicate.
-
-    Stage B — BST/UTC midnight date-shift correction:
-        Source pair: (historical_bst, UTC-dated modern file)
+    Catches events where the BST-dated main catalog and a UTC-dated modern file
+    record the same physical earthquake on different calendar dates:
         BST_date = UTC_date + 1 day  (event at 00:00–05:59 BST → previous UTC day)
         BST_time − 6h ≈ UTC_time  (within _DEDUP_CLOCK_M minutes)
         dist ≤ _DEDUP_DIST_KM km  AND  |ΔM| ≤ _DEDUP_DMAG_B
-        → mark the BST-dated main-catalog entry as duplicate; keep modern record.
 
-    Stage C — Do NOT merge:
-        Clock-time check fails  →  genuinely distinct events despite proximity.
+    Events that fail the clock-time consistency check (|Δ_clock| > _DEDUP_CLOCK_M min)
+    are NOT merged — they are treated as genuinely distinct events (aftershocks,
+    swarms) despite geographic proximity.
 
     Background: the July 2023 overlap between the BST-dated main catalog and the
     UTC-dated monthly file produces 6 double-counted events.  The v1 key misses

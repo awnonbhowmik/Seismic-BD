@@ -108,7 +108,7 @@ Seismic-BD/
 | Events inside Bangladesh | 107 (9.6%) |
 | Events outside Bangladesh | 1005 (90.4%) |
 | M≥4.0 outside Bangladesh | 94.4% |
-| Top source country | Myanmar (34.3%) |
+| Top source country | Myanmar (34.2%) |
 | Top source corridor | Myanmar-India Border (28.0%) |
 | Largest event | M 8.8 (2025 Myanmar) |
 

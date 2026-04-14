@@ -190,7 +190,7 @@ CELLS.append(md("## 2. Load & merge catalogs"))
 CELLS.append(code("""# ── BMD master catalog ────────────────────────────────────────────────────────
 df = pd.read_csv(DATA_DIR / "master_catalog_spatial_v2.csv", low_memory=False)
 
-for col in ["magnitude","latitude","longitude","distance_dhaka_km","depth_km","distance_bd_border_km"]:
+for col in ["magnitude","magnitude_analysis","latitude","longitude","distance_dhaka_km","depth_km","distance_bd_border_km"]:
     if col in df.columns:
         df[col] = pd.to_numeric(df[col], errors="coerce")
 for col in ["year","month","day","decade"]:
@@ -274,7 +274,7 @@ print(f"BMD unique events:           {len(df_bmd):,}")
 print(f"  Modern period (2007+):     {len(df_mod):,}")
 print(f"  Historical (<2000):        {len(df_hist):,}")
 print(f"  Year range:                {int(df_bmd.year.min())} - {int(df_bmd.year.max())}")
-print(f"  Magnitude range:           {df_bmd.magnitude.min():.1f} - {df_bmd.magnitude.max():.1f}")
+print(f"  Magnitude range:           {df_bmd.magnitude_analysis.min():.1f} - {df_bmd.magnitude_analysis.max():.1f}")
 print()
 print(f"Depth coverage (BMD):")
 print(f"  Before earthquakelist patch: {n_depth_before} events")
@@ -420,7 +420,7 @@ the four groups and the label each receives in the catalog:
 CELLS.append(md("## 3. Data audit & quality"))
 CELLS.append(code(r"""# ── Table 1: Missingness audit ────────────────────────────────────────────────
 key_cols = ["date_iso","year","month","latitude","longitude",
-            "magnitude","depth_km","distance_dhaka_km",
+            "magnitude_analysis","depth_km","distance_dhaka_km",
             "source_corridor","inside_bangladesh","epicenter_country"]
 
 audit = pd.DataFrame({
@@ -482,8 +482,9 @@ annual = (
     df_bmd.dropna(subset=["year"])
     .groupby("year")
     .agg(n_all=("event_id","count"),
-         n_M4 =("magnitude", lambda x: (x>=4.0).sum()),
-         n_M5 =("magnitude", lambda x: (x>=5.0).sum()))
+         n_M4 =("magnitude_analysis", lambda x: (x>=4.0).sum()),
+         n_M5 =("magnitude_analysis", lambda x: (x>=5.0).sum()))
+
     .reset_index().astype({"year":int})
 )
 
@@ -524,14 +525,14 @@ plt.show()
 CELLS.append(md("## 5. Temporal analysis"))
 CELLS.append(code(r"""# ── Table 3: Decadal summary ─────────────────────────────────────────────────
 dec_tbl = (
-    df_bmd.dropna(subset=["decade","magnitude"])
+    df_bmd.dropna(subset=["decade","magnitude_analysis"])
     .groupby("decade")
     .agg(
         N          = ("event_id","count"),
         Mag_mean   = ("magnitude","mean"),
         Mag_max    = ("magnitude","max"),
-        N_M4plus   = ("magnitude", lambda x: (x>=4.0).sum()),
-        N_M5plus   = ("magnitude", lambda x: (x>=5.0).sum()),
+        N_M4plus   = ("magnitude_analysis", lambda x: (x>=4.0).sum()),
+        N_M5plus   = ("magnitude_analysis", lambda x: (x>=5.0).sum()),
         Pct_inside = ("inside_bangladesh", lambda x: round(x.mean()*100,1)),
     )
     .round(2).reset_index()
@@ -556,8 +557,8 @@ def band_label(m):
         if lo<=m<hi: return lbl
     return MAG_BANDS[-1][0]
 
-df_p = df_bmd.dropna(subset=["decade","magnitude"]).copy()
-df_p["band"] = df_p["magnitude"].apply(band_label)
+df_p = df_bmd.dropna(subset=["decade","magnitude_analysis"]).copy()
+df_p["band"] = df_p["magnitude_analysis"].apply(band_label)
 pivot = df_p.groupby(["decade","band"]).size().unstack(fill_value=0)
 ordered = [b[0] for b in MAG_BANDS if b[0] in pivot.columns]
 colors  = [b[3] for b in MAG_BANDS if b[0] in pivot.columns]
@@ -634,7 +635,7 @@ periods = {
 }
 rows=[]
 for lbl,sub in periods.items():
-    m = sub["magnitude"].dropna()
+    m = sub["magnitude_analysis"].dropna()
     rows.append({"Period":lbl,
                  "$N$":len(sub),
                  "$N$ with $M$":len(m),
@@ -658,9 +659,9 @@ bins = np.arange(2.0, 9.25, 0.25)
 
 # (a) Histogram
 ax = axes[0]
-ax.hist(df_bmd["magnitude"].dropna(), bins=bins, color=PALETTE["blue"],
+ax.hist(df_bmd["magnitude_analysis"].dropna(), bins=bins, color=PALETTE["blue"],
         alpha=0.80, edgecolor="white", lw=0.5, label=r"All (1918--2025)")
-ax.hist(df_mod["magnitude"].dropna(), bins=bins, color=PALETTE["orange"],
+ax.hist(df_mod["magnitude_analysis"].dropna(), bins=bins, color=PALETTE["orange"],
         alpha=0.72, edgecolor="white", lw=0.5, label=r"2007--2025")
 for mv, col, ls in [(4.0, PALETTE["red"], "--"), (5.0, PALETTE["gray"], ":")]:
     ax.axvline(mv, color=col, ls=ls, lw=2.0, label=f"$M = {mv}$")
@@ -675,7 +676,7 @@ for sub, lbl, col, ls in [
     (df_bmd, r"All (1918--2025)", PALETTE["blue"],   "-"),
     (df_mod, r"2007--2025",       PALETTE["orange"], "--"),
 ]:
-    m = sub["magnitude"].dropna().sort_values()
+    m = sub["magnitude_analysis"].dropna().sort_values()
     ax.step(m, np.linspace(0, 1, len(m)), lw=2.2, color=col, ls=ls,
             label=f"{lbl}  ($n={len(m)}$)")
 for mv in [3, 4, 5, 6]:
@@ -688,7 +689,7 @@ ax.legend(loc="lower right", framealpha=0.92)
 
 # (c) Gutenberg-Richter
 ax = axes[2]
-mags_mod = df_mod["magnitude"].dropna().values
+mags_mod = df_mod["magnitude_analysis"].dropna().values
 Mc = 3.0
 mags_c = mags_mod[mags_mod >= Mc]
 mbins  = np.arange(Mc, mags_c.max()+0.05, 0.1)
@@ -775,7 +776,7 @@ era_handles = []
 for lbl, sub, col, mk, alpha in ERA_STYLES:
     if len(sub):
         sc = ax.scatter(sub.longitude, sub.latitude,
-                        s=mag_size(sub.magnitude), c=col, marker=mk,
+                        s=mag_size(sub.magnitude_analysis), c=col, marker=mk,
                         alpha=alpha, lw=0.25, edgecolors="white", zorder=5)
         era_handles.append(mpatches.Patch(color=col, alpha=0.8, label=rf"{lbl}  ($n={len(sub)}$)"))
 
@@ -820,8 +821,8 @@ basemap(ax, BBOX_TIGHT, wt)
 cmap = plt.cm.RdYlBu_r
 norm = mcolors.Normalize(vmin=2.5, vmax=7.5)
 sc = ax.scatter(mod_geo.longitude, mod_geo.latitude,
-                s=mag_size(mod_geo.magnitude, scale=2.5),
-                c=mod_geo.magnitude, cmap=cmap, norm=norm,
+                s=mag_size(mod_geo.magnitude_analysis, scale=2.5),
+                c=mod_geo.magnitude_analysis, cmap=cmap, norm=norm,
                 alpha=0.78, lw=0.25, edgecolors="white", zorder=5)
 
 cbar = plt.colorbar(sc, ax=ax, fraction=0.028, pad=0.02, shrink=0.88)
@@ -865,7 +866,7 @@ for corridor, (col, mk, alpha) in CORRIDOR_STYLE.items():
     sub = df_geo[df_geo.source_corridor == corridor]
     if len(sub) == 0: continue
     ax.scatter(sub.longitude, sub.latitude,
-               s=mag_size(sub.magnitude), c=col, marker=mk,
+               s=mag_size(sub.magnitude_analysis), c=col, marker=mk,
                alpha=alpha, lw=0.2, edgecolors="white", zorder=5)
     short = corridor.replace("_", " ")
     cor_handles.append(
@@ -905,11 +906,11 @@ Bangladesh originate outside its borders. For $M \geq 4.0$, **94.4\% are externa
 CELLS.append(code(r"""# ── Table 5: Cross-border summary ────────────────────────────────────────────
 thresholds = [
     ("All",         df_bmd),
-    ("$M \geq 3$",  df_bmd[df_bmd.magnitude>=3.0]),
-    ("$M \geq 4$",  df_bmd[df_bmd.magnitude>=4.0]),
-    ("$M \geq 5$",  df_bmd[df_bmd.magnitude>=5.0]),
-    ("$M \geq 6$",  df_bmd[df_bmd.magnitude>=6.0]),
-    ("$M \geq 7$",  df_bmd[df_bmd.magnitude>=7.0]),
+    ("$M \geq 3$",  df_bmd[df_bmd.magnitude_analysis>=3.0]),
+    ("$M \geq 4$",  df_bmd[df_bmd.magnitude_analysis>=4.0]),
+    ("$M \geq 5$",  df_bmd[df_bmd.magnitude_analysis>=5.0]),
+    ("$M \geq 6$",  df_bmd[df_bmd.magnitude_analysis>=6.0]),
+    ("$M \geq 7$",  df_bmd[df_bmd.magnitude_analysis>=7.0]),
 ]
 rows=[]
 for lbl, sub in thresholds:
@@ -927,9 +928,9 @@ show_table(cb_tbl.set_index("Threshold"), "Table 5 — Cross-Border Seismic Depe
 CELLS.append(code(r"""# ── Cross-border donut charts ─────────────────────────────────────────────────
 thresholds_plot = [
     ("All",       df_bmd),
-    (r"$M\geq3$", df_bmd[df_bmd.magnitude>=3.0]),
-    (r"$M\geq4$", df_bmd[df_bmd.magnitude>=4.0]),
-    (r"$M\geq5$", df_bmd[df_bmd.magnitude>=5.0]),
+    (r"$M\geq3$", df_bmd[df_bmd.magnitude_analysis>=3.0]),
+    (r"$M\geq4$", df_bmd[df_bmd.magnitude_analysis>=4.0]),
+    (r"$M\geq5$", df_bmd[df_bmd.magnitude_analysis>=5.0]),
 ]
 
 # Stronger, more distinct colours for inside/outside
@@ -1040,7 +1041,7 @@ ax.legend(framealpha=0.92)
 ax = axes[1]
 for lo, hi, lbl, col in [(0,4,r"$M<4$",MAG_COLORS[1]), (4,5,r"$M$ 4--5",MAG_COLORS[2]),
                           (5,6,r"$M$ 5--6",MAG_COLORS[3]), (6,99,r"$M\geq6$",MAG_COLORS[5])]:
-    b = df_dist[(df_dist.magnitude>=lo)&(df_dist.magnitude<hi)]
+    b = df_dist[(df_dist.magnitude_analysis>=lo)&(df_dist.magnitude_analysis<hi)]
     if len(b):
         sns.histplot(b["distance_dhaka_km"], bins=bins, ax=ax, color=col,
                      alpha=0.78, label=rf"{lbl} ($n={len(b)}$)",
@@ -1074,9 +1075,9 @@ corr_tbl = (
     .agg(N=("event_id","count"),
          Mag_mean=("magnitude","mean"),
          Mag_max =("magnitude","max"),
-         N_M4    =("magnitude",lambda x:(x>=4).sum()),
-         N_M5    =("magnitude",lambda x:(x>=5).sum()),
-         N_M6    =("magnitude",lambda x:(x>=6).sum()),
+         N_M4    =("magnitude_analysis",lambda x:(x>=4).sum()),
+         N_M5    =("magnitude_analysis",lambda x:(x>=5).sum()),
+         N_M6    =("magnitude_analysis",lambda x:(x>=6).sum()),
          Pct_cat =("event_id",lambda x:round(len(x)/len(df_bmd)*100,1)))
     .round(2).sort_values("N",ascending=False).reset_index()
 )
@@ -1156,8 +1157,8 @@ CELLS.append(md(r"""## 10. Research memo & paper direction
 | Top source country | Myanmar (34.2\%) |
 | Top source corridor | Myanmar--India Border (28.0\%) |
 | $b$-value (Aki MLE, $M_c=3$) | 0.27 (anomalously low; true $M_c \approx 3.5$--$4.0$) |
-| Largest event in catalog | $M\,8.8$ (2025-07-29, Kamchatka, Russia; $\approx$6575 km from Dhaka) |
-| Largest Myanmar event in catalog | $M\,7.3$ (2025-03-28, Mandalay; BMD value; USGS: $M\,7.7$) |
+| Largest event in catalog | $M\,8.8$ (2025-07-29, Kamchatka, Russia; $\approx$6575 km from Dhaka — very distant, Other\_Distant corridor) |
+| Largest Myanmar/regional event | $M\,7.3$ (2025-03-28, Mandalay, Myanmar; USGS: $M\,7.7$) |
 
 ### Paper direction ranking
 
@@ -1214,8 +1215,8 @@ def annual_counts(df_sub, label=""):
 
 # Count series for different thresholds/subsets
 ac_all  = annual_counts(df_bmd)
-ac_m4   = annual_counts(df_bmd[df_bmd.magnitude>=4.0])
-ac_m5   = annual_counts(df_bmd[df_bmd.magnitude>=5.0])
+ac_m4   = annual_counts(df_bmd[df_bmd.magnitude_analysis>=4.0])
+ac_m5   = annual_counts(df_bmd[df_bmd.magnitude_analysis>=5.0])
 ac_in   = annual_counts(df_bmd[df_bmd.inside_bangladesh])
 ac_out  = annual_counts(df_bmd[~df_bmd.inside_bangladesh])
 
@@ -1469,7 +1470,7 @@ N_YRS  = 2024 - 2007 + 1   # 18 complete years
 thresholds = [3.0, 4.0, 5.0, 6.0, 7.0]
 rows_rt = []
 for m in thresholds:
-    n_all = (modern.magnitude >= m).sum()
+    n_all = (modern.magnitude_analysis >= m).sum()
     n_bd  = (modern[modern.inside_bangladesh].magnitude >= m).sum()
     n_out = (modern[~modern.inside_bangladesh].magnitude >= m).sum()
     lam_all = n_all / N_YRS
@@ -1510,7 +1511,7 @@ fig, axes = plt.subplots(1, 2, figsize=(17, 7))
 # Panel (a): log10(annual rate) vs M — GR-style cumulative hazard curve
 ax = axes[0]
 for label, sub, col, ls, mk in subsets:
-    rates = np.array([(sub.magnitude >= m).sum() / N_YRS for m in mpts])
+    rates = np.array([(sub.magnitude_analysis >= m).sum() / N_YRS for m in mpts])
     rates_safe = np.where(rates > 0, rates, np.nan)
     ax.semilogy(mpts, rates_safe, ls, color=col, lw=3.0, label=label,
                 marker=mk, ms=8, markevery=5, markeredgecolor="#222222",
@@ -1527,7 +1528,7 @@ ax.tick_params(labelsize=FS)
 # Panel (b): return period T_r vs M (log scale)
 ax2 = axes[1]
 for label, sub, col, ls, mk in subsets:
-    n_evts = np.array([(sub.magnitude >= m).sum() for m in mpts], dtype=float)
+    n_evts = np.array([(sub.magnitude_analysis >= m).sum() for m in mpts], dtype=float)
     rts = np.where(n_evts > 0, N_YRS / n_evts, np.nan)
     ax2.semilogy(mpts, rts, ls, color=col, lw=3.0, label=label,
                  marker=mk, ms=8, markevery=5, markeredgecolor="#222222",
@@ -1678,7 +1679,7 @@ years_all = np.arange(int(df_bmd.year.min()), int(df_bmd.year.max()) + 1)
 mc_results = []
 for y_start in years_all:
     win = df_bmd[(df_bmd.year >= y_start) & (df_bmd.year < y_start + WINDOW)]
-    mc = mc_maxcurv(win.magnitude.dropna().values)
+    mc = mc_maxcurv(win.magnitude_analysis.dropna().values)
     mc_results.append({"year_center": y_start + WINDOW / 2, "Mc": mc, "n": len(win)})
 
 mc_df = pd.DataFrame(mc_results).dropna(subset=["Mc"])
@@ -1877,22 +1878,22 @@ fig, ax = plt.subplots(figsize=(18, 8))
 
 for era, col in ERA_COLORS.items():
     sub = df_mt[df_mt.era == era]
-    sc  = ax.scatter(sub.plot_year, sub.magnitude,
-                     c=col, s=mag_size(sub.magnitude, base=6, scale=2.0),
+    sc  = ax.scatter(sub.plot_year, sub.magnitude_analysis,
+                     c=col, s=mag_size(sub.magnitude_analysis, base=6, scale=2.0),
                      alpha=0.50, edgecolors="none", zorder=3, label=era)
 
 # Label large events M >= 6.5
-big = df_mt[df_mt.magnitude >= 6.5].sort_values("magnitude", ascending=False)
+big = df_mt[df_mt.magnitude_analysis >= 6.5].sort_values("magnitude", ascending=False)
 for _, row in big.iterrows():
     col = ERA_COLORS[row.era]
-    ax.scatter(row.plot_year, row.magnitude,
-               c=col, s=mag_size(pd.Series([row.magnitude]), base=6, scale=2.0).iloc[0],
+    ax.scatter(row.plot_year, row.magnitude_analysis,
+               c=col, s=mag_size(pd.Series([row.magnitude_analysis]), base=6, scale=2.0).iloc[0],
                edgecolors="black", linewidths=0.8, zorder=5, alpha=0.9)
-    label_txt = rf"$M{row.magnitude:.1f}$, {int(row.year)}"
-    offset_y  = 0.18 if row.magnitude < 8.0 else -0.25
+    label_txt = rf"$M{row.magnitude_analysis:.1f}$, {int(row.year)}"
+    offset_y  = 0.18 if row.magnitude_analysis < 8.0 else -0.25
     ax.annotate(label_txt,
-                xy=(row.plot_year, row.magnitude),
-                xytext=(row.plot_year + 0.5, row.magnitude + offset_y),
+                xy=(row.plot_year, row.magnitude_analysis),
+                xytext=(row.plot_year + 0.5, row.magnitude_analysis + offset_y),
                 fontsize=FS-2, color=col, fontweight="bold",
                 arrowprops=dict(arrowstyle="-", color=col, lw=0.8),
                 bbox=dict(boxstyle="round,pad=0.2", fc="white", alpha=0.75, ec="none"))
@@ -1938,7 +1939,7 @@ CELLS.append(md(r"""### Magnitude--time insights
    - 2015 Nepal M7.8 (Gorkha earthquake) — significant felt reports in Bangladesh
    - 2016 Myanmar M6.8+ sequence — triggered aftershock activity along the Sagaing fault
    - 2025 Mandalay, Myanmar M 7.3 (BMD; USGS M 7.7) — the largest regional event in the 2025 catalog period, generating aftershocks visible as a cluster at 2025+
-   - 2025 Kamchatka, Russia M 8.8 (BMD value; $\approx$6575 km from Dhaka) — the largest raw magnitude in the catalog but a very distant event with minimal Bangladesh impact; **note: BMD-reported magnitude should be cross-checked against USGS**
+   - 2025 Kamchatka, Russia M 8.8 ($\approx$6575 km from Dhaka) — the largest \texttt{magnitude\_analysis} value in the catalog; a very distant event with minimal direct Bangladesh impact, included because it was recorded in the BMD felt-events document
 
 4. **No evidence of a secular trend in large events** (M ≥ 6) — the apparent
    increase at lower magnitudes is entirely a detection improvement effect, consistent
@@ -2102,7 +2103,7 @@ CELLS.append(code(r"""# ── Exceedance probability: P(>=1 event M>=m in T yea
 modern_ep  = df_bmd[(df_bmd.year >= 2007) & (df_bmd.year <= 2024)]
 N_YRS_EP   = 18
 Mc_ep      = 3.0
-n_at_Mc    = (modern_ep.magnitude >= Mc_ep).sum()
+n_at_Mc    = (modern_ep.magnitude_analysis >= Mc_ep).sum()
 lam_Mc     = n_at_Mc / N_YRS_EP   # annual rate at M >= Mc
 
 a_gr = np.log10(lam_Mc) + b_lin * Mc_ep   # GR intercept: log10(N) = a - b*M
@@ -2242,18 +2243,18 @@ CELLS.append(md("## 19. Final summary"))
 CELLS.append(code(r"""# ── Final summary printout ────────────────────────────────────────────────────
 n  = len(df_bmd)
 nd = df_bmd.inside_bangladesh.sum()
-max_ev = df_bmd.loc[df_bmd.magnitude.idxmax()]
+max_ev = df_bmd.loc[df_bmd.magnitude_analysis.idxmax()]
 
 print("=" * 62)
 print("  MASTER CATALOG --- FINAL SUMMARY")
 print("=" * 62)
 print(f"  Total unique events:           {n:,}")
 print(f"  Year range:                    {int(df_bmd.year.min())} -- {int(df_bmd.year.max())}")
-print(f"  Magnitude range:               {df_bmd.magnitude.min():.1f} -- {df_bmd.magnitude.max():.1f}")
+print(f"  Magnitude range:               {df_bmd.magnitude_analysis.min():.1f} -- {df_bmd.magnitude_analysis.max():.1f}")
 print(f"  Events inside Bangladesh:      {nd} ({nd/n*100:.1f}%)")
 print(f"  Events outside Bangladesh:     {n-nd} ({(n-nd)/n*100:.1f}%)")
-m4_out = ((~df_bmd.inside_bangladesh) & (df_bmd.magnitude>=4)).sum()
-m4_tot = (df_bmd.magnitude>=4).sum()
+m4_out = ((~df_bmd.inside_bangladesh) & (df_bmd.magnitude_analysis>=4)).sum()
+m4_tot = (df_bmd.magnitude_analysis>=4).sum()
 print(f"  M>=4 events outside BD:        {m4_out}/{m4_tot} ({m4_out/m4_tot*100:.1f}%)")
 print(f"  Top source country:            {df_bmd.epicenter_country.value_counts().index[0]}")
 print(f"  Top source corridor:           {df_bmd.source_corridor.value_counts().index[0]}")

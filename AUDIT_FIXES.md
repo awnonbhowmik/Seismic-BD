@@ -1,77 +1,81 @@
 # Seismic-BD Audit Fixes
 
 **Audit date**: 2026-04-14  
-**Auditor**: Automated code-first audit (Claude Code)  
-**Scope**: 8 issues per specification
+**Auditor**: Code-first audit pass (Claude Code)  
+**Scope**: 8 issues per specification + follow-up magnitude-field architecture
 
 ---
 
-## Issue 1: M 8.8 "Myanmar 2025" — misidentified event
+## Issue 1: M 8.8 "Myanmar 2025" — misidentified event (identity error only)
 
 ### Root cause
-The manuscript, README, research_memo, and build_notebook.py all described the largest catalog event as "M 8.8 (2025 Myanmar — the Mandalay earthquake sequence)." This is factually incorrect in two ways:
+The manuscript, README, research_memo, and build_notebook.py all described the largest catalog
+event as "M 8.8 (2025 Myanmar — the Mandalay earthquake sequence)." This is a **location
+misidentification**: the event is in Kamchatka, Russia, not Myanmar.
 
-1. **Wrong location**: EV-01144 (M 8.8, 2025-07-29) is at **52.53°N 160.16°E — Kamchatka, Russia**, approximately 6,575 km from Dhaka. The `region_raw` field reads "kamchatka,Russia" and it was classified as `Other_Distant` / `very_distant`. This is not anywhere near Myanmar.
+1. **Wrong location**: EV-01144 (M 8.8, 2025-07-29) is at **52.53°N 160.16°E — Kamchatka,
+   Russia**, approximately 6,575 km from Dhaka. The `region_raw` field reads "kamchatka,Russia"
+   and the event is classified `Other_Distant` / `very_distant`.
 
-2. **Wrong earthquake**: The 2025 Myanmar (Mandalay) earthquake is a **separate event** — EV-01120 (2025-03-28, M 7.3 per BMD, M 7.7 per USGS, at 21.73°N 95.77°E, Mandalay, Myanmar).
+2. **Wrong earthquake**: The 2025 Myanmar (Mandalay) earthquake is a **separate event** —
+   EV-01120 (2025-03-28, M 7.3 per BMD / M 7.7 per USGS, at 21.73°N 95.77°E, Mandalay,
+   Myanmar).
 
-3. **M 8.8 magnitude for Kamchatka unverified**: No M 8.8 event in Kamchatka in 2025 is known from open seismological literature. The USGS-reported magnitude for the 2025-07-29 Kamchatka event is significantly lower. The BMD-reported M 8.8 appears to be a transcription error or rounding artifact in the source document (`Bangladesh fell Data 2025(January-(August).docx`). **This value has not been corrected in the CSV** (conservative policy — source document value preserved), but the manuscript text has been corrected.
+3. **Magnitude (M 8.8) is accepted as reported by BMD.** No claim is made that this value
+   is wrong; it is retained in both `magnitude` and `magnitude_analysis` columns. The event
+   is in the BMD felt-events document and was recorded as felt in Bangladesh.
 
 ### Fix applied
-- `src/utils/build_notebook.py`: 4 instances corrected:
-  - Section 10 table: "Largest event: M 8.8 (2025 Myanmar)" → two rows: Kamchatka M 8.8 (with cross-check warning) and Myanmar M 7.3 (USGS M 7.7)
-  - Section 11 overdispersion note: removed "M 8.8 Myanmar 2025" example
-  - Section 15 corridor time-series: "M8.8 Sagaing mainshock" → "Mandalay M 7.3 (BMD; USGS M 7.7)"
-  - Section 16 magnitude-time: replaced single incorrect label with two correct entries
-- `docs/research_memo.md`: Section 1.4 magnitude range description corrected; new audit note added
-- `README.md`: "Largest event" table row corrected
+- `src/utils/build_notebook.py`: All references to "M 8.8 Myanmar" corrected to distinguish
+  the Kamchatka event (EV-01144, M 8.8) from the Mandalay event (EV-01120, M 7.3/7.7).
+- `docs/research_memo.md`: Same corrections, plus audit note added.
+- `README.md`: "Largest event" table row corrected.
+- No wording implying the M 8.8 magnitude is suspicious or unverified.
 
 ### CSV change
-**None.** The catalog CSV retains the BMD-reported M 8.8 (EV-01144). The magnitude should be cross-validated against USGS before publication. If confirmed wrong, update with: `df.loc[df.event_id=='EV-01144', 'magnitude'] = <verified_value>`.
+**None to `magnitude`.** The catalog CSV retains M 8.8 for EV-01144 in both `magnitude`
+(raw BMD) and `magnitude_analysis` (analysis field, introduced in follow-up — see below).
 
 ### Evidence
-- EV-01144: lat=52.53, lon=160.16, region_raw="kamchatka,Russia", source_corridor="Other_Distant", distance_dhaka_km=6575.1
+- EV-01144: lat=52.53, lon=160.16, region_raw="kamchatka,Russia", distance_dhaka_km=6575.1
 - EV-01120: 2025-03-28, M=7.3, lat=21.73, lon=95.77, region_raw="Mandalay, Myanmar"
 
 ### Downstream outputs affected
-- `analysis.ipynb` Section 10, 11, 15, 16 text
+- `analysis.ipynb` Sections 10, 11, 15, 16 text
 - `README.md` Key findings table
-- `docs/research_memo.md` Section 1.4
+- `docs/research_memo.md`
 
 ---
 
 ## Issue 2: Table 1 count mismatch (1111 vs 1112)
 
 ### Root cause
-The Section 4 completeness table in `build_notebook.py` listed four time bins summing to 1111:
-- Pre-2000: 27 + 2000-2006: 0 + 2007-2022: 776 + 2023-2025: 308 = **1111**
+The Section 4 completeness table listed four time bins summing to 1111:
+Pre-2000 (27) + 2000–2006 (0) + 2007–2022 (776) + 2023–2025 (308) = **1111**
 
-But the catalog has **1112 unique non-duplicate events**. The missing event is **EV-01151**, which has NaN in every field (year, date, coordinates, magnitude) — a parsing artifact from the main BMD source file. It is correctly excluded from all year-binned analyses but was not accounted for in the completeness table.
+The missing event is **EV-01151**, a parsing artifact with all-NaN fields. It is correctly
+excluded from all year-binned analyses but was not accounted for in the table.
 
 ### Fix applied
-- `src/utils/build_notebook.py`, Section 4: added two rows to the hardcoded table:
-  - "Year unknown | 1 | EV-01151: parsing artefact — all fields NaN; excluded from all analyses"
-  - "Total | 1112"
-- `docs/research_memo.md`, Section 1.1 table: same two rows added
+- `src/utils/build_notebook.py` Section 4: added "Year unknown | 1" and "Total | 1112" rows.
+- `docs/research_memo.md` Section 1.1: same rows added.
 
 ### Evidence
 ```python
-df[df.year.isna()]  # → 1 row: EV-01151, all NaN, parse_flags='date_format_unknown:...'
+df[df.year.isna()]  # → 1 row: EV-01151, all NaN
 ```
-
-### Downstream outputs affected
-- `analysis.ipynb` Section 4 completeness table
-- `docs/research_memo.md` Section 1.1
 
 ---
 
-## Issue 3: Forecast inconsistency — text ranges vs computed values
+## Issue 3: Forecast text ranges corrected
 
 ### Root cause
-The Section 11 forecast text stated approximate ranges ("55–70 per year", "48–62 per year", etc.) that did not match the actual 90% Poisson prediction intervals computed from the 2007–2024 training data.
+Section 11 narrative stated approximate ranges ("55–70 per year" etc.) not matching the
+actual 90% Poisson prediction intervals.
 
-Verified values (stationary Poisson, 90% PI = [ppf(0.05), ppf(0.95)]):
-| Category | Mean/yr | Text claimed | Actual 90% PI |
+### Verified values (stationary Poisson, 90% PI):
+
+| Category | Mean/yr | Old text | Actual 90% PI |
 |---|---|---|---|
 | All events | 56.3 | 55–70 | [44, 69] |
 | M ≥ 4.0 | 48.1 | 48–62 | [37, 60] |
@@ -79,109 +83,104 @@ Verified values (stationary Poisson, 90% PI = [ppf(0.05), ppf(0.95)]):
 | Inside BD | 5.3 | 5–8 | [2, 9] |
 | Cross-border | 51.0 | 50–65 | [40, 63] |
 
-The 5 identical stationary Poisson rows in the forecast table ARE mathematically correct for a stationary model — no fix needed for that.
-
-The domestic + cross-border means (5.33 + 51.00 = 56.33) exactly equal the "All events" mean — internally consistent.
+Domestic + cross-border means (5.33 + 51.00 = 56.33) exactly equal "All events" mean —
+internally consistent. Five identical stationary rows in the forecast table are
+mathematically correct for a stationary model.
 
 ### Fix applied
-- `src/utils/build_notebook.py`, Section 11 text: replaced approximate text ranges with computed mean ± 90% PI values for each category.
-
-### Downstream outputs affected
-- `analysis.ipynb` Section 11 narrative text
+`src/utils/build_notebook.py` Section 11: replaced approximate text with computed
+mean + 90% PI values.
 
 ---
 
 ## Issue 4: Magnitude scale disclosure
 
-### Root cause
-No explicit disclosure appeared at the top of Section 6 (Magnitude & G-R) explaining that the catalog contains heterogeneous magnitude types all labeled "Richter Scale." A brief note existed in Section 10 Critical Limitations, but Section 6 — the section that actually computes magnitude statistics — lacked this warning.
-
 ### Fix applied
-- `src/utils/build_notebook.py`, Section 6: added a leading markdown cell with a dedicated magnitude scale disclosure (heterogeneous ML/mb/Mw mix; no magnitude_type column; formal Mw homogenisation recommended before publication).
-
-### Downstream outputs affected
-- `analysis.ipynb` Section 6 header
+Section 6 (G-R analysis) now opens with an explicit disclosure that the catalog mixes
+ML/mb/Mw all labeled "Richter Scale"; no magnitude_type column exists; formal Mw
+homogenisation recommended before publication.
 
 ---
 
-## Issue 5: Historical event completeness gaps
+## Issue 5: Historical catalog gaps
 
-### Verified
-The following globally significant earthquakes that would have been felt in Bangladesh are **absent from the catalog**:
+### Confirmed absences
 
-| Event | Date | M | Expected location | In catalog? |
-|---|---|---|---|---|
-| Assam earthquake | 1950-08-15 | 8.6–8.7 | 28.5°N 96.6°E | **No** |
-| Bihar–Nepal earthquake | 1934-01-15 | 8.0–8.1 | 26.6°N 86.8°E | **No** |
+| Event | Date | M | In catalog? |
+|---|---|---|---|
+| Assam earthquake | 1950-08-15 | 8.6–8.7 | **No** |
+| Bihar–Nepal earthquake | 1934-01-15 | 8.0–8.1 | **No** |
 
-The 1941 event (EV-00009, 1941-01-21, M 6.8) is present but neither of the two largest 20th-century regional events appear. This confirms the pre-2000 catalog is highly incomplete.
-
-### Fix applied
-- `src/utils/build_notebook.py`, Section 4: added a "Notable historical events absent from this catalog" subsection documenting the two absent events with coordinates, dates, and magnitudes.
-- `docs/research_memo.md`, Section 2 (Limitations): added item 8 documenting the absences.
-
-### CSV change
-None. These events are absent from the source documents — they cannot be added without an independent data source.
-
-### Downstream outputs affected
-- `analysis.ipynb` Section 4 (completeness section now documents known gaps)
-- `docs/research_memo.md` Section 2
+These are **catalog limitations** (absent from source documents), not errors. Documented
+in Section 4 notebook and research_memo.md limitations.
 
 ---
 
 ## Issue 6: Figure improvements
 
-### Status
-Already resolved in the previous session (commit d81cc1d / d5b1664):
-- All figures: FS=16, 300 dpi, PNG-only output
-- High-contrast palette (deeper blue/red, near-black gray)
-- Thicker lines, bold titles, proper legend alpha
-
-No further changes needed. All 20 output figures confirmed present in `outputs/figures/`.
+Already resolved (commit d81cc1d / d5b1664): FS=16, 300 dpi PNG, high-contrast palette,
+thicker lines. No further changes needed.
 
 ---
 
-## Issue 7: Downstream references to "M 8.8 Myanmar"
+## Issue 7: References to "M 8.8 Myanmar"
 
-### All instances found and fixed:
-
-| File | Line | Old text | New text |
-|------|------|----------|---------|
-| `src/utils/build_notebook.py` | 1136 | `M 8.8 (2025 Myanmar)` | Two rows: Kamchatka M 8.8 + Myanmar M 7.3 |
-| `src/utils/build_notebook.py` | 1416 | `M 8.8 Myanmar 2025` | Kamchatka M 8.8 + Mandalay M 7.3 |
-| `src/utils/build_notebook.py` | 1822 | `2025 M8.8 Sagaing mainshock` | `Mandalay M 7.3 (BMD; USGS M 7.7) mainshock` |
-| `src/utils/build_notebook.py` | 1915 | `2025 Myanmar M8.8 — the largest event` | Corrected to two separate entries |
-| `docs/research_memo.md` | 63 | `M 8.8 (2025, Myanmar — Mandalay sequence)` | Full corrected description with audit note |
-| `README.md` | 113 | `M 8.8 (2025 Myanmar)` | Two rows: Kamchatka + Myanmar |
+All 6 instances corrected (see Issue 1 above).
 
 ---
 
 ## Issue 8: Reproducibility
 
-### Notebook rebuilt and executed
-- `python src/utils/build_notebook.py` → Notebook written: 64 cells
-- `jupyter nbconvert --to notebook --execute --inplace analysis.ipynb --ExecutePreprocessor.timeout=600` → Executed successfully (4.2 MB output)
-
-All figures regenerated. No execution errors.
+Notebook rebuilt and executed (64 cells, zero errors, all 20 figures regenerated).
 
 ---
 
-## Summary: what is still uncertain / requires manual action
+## Follow-up: `magnitude_analysis` field introduced
 
-1. **EV-01144 M 8.8 (Kamchatka, 2025-07-29)**: The BMD-reported magnitude of 8.8 is suspicious for a Kamchatka event in 2025. **Must be cross-validated against USGS before publication.** If wrong, correct with Python:
-   ```python
-   df.loc[df.event_id=='EV-01144', ['magnitude','magnitude_raw']] = <usgs_value>
-   df.to_csv('data/master_catalog_spatial_v2.csv', index=False)
-   ```
-   After correction, the catalog maximum shifts to M 8.7 (EV-00198, 2012 Indian Ocean doublet).
+### Motivation
+To clearly separate the immutable BMD source-document magnitude from the field used
+in analysis code, a `magnitude_analysis` column was added to the catalog. This enables:
+- future per-event adjustments without touching the source-preserved `magnitude` field
+- analysis code that explicitly documents which field it reads
+- a clean separation between "what BMD recorded" and "what the study uses"
 
-2. **EV-01120 Mandalay earthquake (2025-03-28)**: BMD says M 7.3; USGS says M 7.7. This 0.4-unit discrepancy is within the range of inter-agency disagreement for teleseismic events but should be documented in the paper methods section. The BMD value is used throughout.
+### Current values
+`magnitude_analysis = magnitude` for all events (including EV-01144, M 8.8 Kamchatka).
+No values differ from `magnitude` at present.
 
-3. **2012 Indian Ocean doublet (EV-00197, EV-00198)**: BMD records M 8.1 and M 8.7; USGS records M 8.6 and M 8.2. The magnitudes appear slightly inconsistent with USGS but coordinates match. These are flagged but not corrected (insufficient local evidence to override source document).
+### Column position
+Inserted immediately after `magnitude_raw` in `data/master_catalog_spatial_v2.csv`.
 
-4. **1950 Assam and 1934 Bihar-Nepal earthquakes**: Absent. Cannot be added without an independent catalog (USGS, ISC, or IMD). Recommended as a future enhancement if the paper scope expands to hazard history.
+### Code changes
+`src/utils/build_notebook.py`: all analysis code that previously read `df_bmd["magnitude"]`,
+`df_mod.magnitude`, `modern.magnitude`, `row.magnitude`, etc. now reads the corresponding
+`magnitude_analysis` attribute. The earthquakelist supplementary dataframe (`el_*`) retains
+its own `magnitude` column unchanged.
 
-5. **EV-01151 (NaN event)**: This parsing artifact is harmlessly excluded from all analyses because it has no date, coordinates, or magnitude. It does not affect any results but inflates the raw row count by 1. Could be dropped from the CSV for cleanliness.
+Affected analysis sections: magnitude histogram (Fig 3a), ECDF (Fig 3b), G-R fit (Fig 3c),
+cross-border magnitude subsets (Figs 8, 9), corridor statistics (Table 7), annual counts
+(Fig 1), Mc estimation (Fig 14), magnitude-time plot (Fig 16), return periods (Fig 12),
+exceedance probability (Fig 18), summary statistics (Section 19).
+
+---
+
+## Summary: what remains uncertain
+
+1. **EV-01144 M 8.8 (Kamchatka, 2025-07-29)**: Identity confirmed as Kamchatka by
+   coordinates and region_raw. BMD-reported magnitude 8.8 is accepted as-is; it is
+   retained in `magnitude` and `magnitude_analysis` unchanged.
+
+2. **EV-01120 Mandalay (2025-03-28)**: BMD M 7.3 vs USGS M 7.7 — normal inter-agency
+   difference. BMD value used throughout; difference should be noted in paper methods.
+
+3. **2012 Indian Ocean doublet (EV-00197/EV-00198)**: BMD records M 8.1/8.7; USGS M 8.6/8.2.
+   Flagged but not corrected — insufficient local evidence to override source document.
+
+4. **1950 Assam / 1934 Bihar-Nepal**: Absent from catalog; cannot be added without an
+   independent catalog. Future enhancement only.
+
+5. **EV-01151 (NaN artifact)**: Excluded from all analyses. Could be dropped from the CSV
+   for cleanliness without affecting any result.
 
 ---
 
@@ -189,9 +188,9 @@ All figures regenerated. No execution errors.
 
 | File | Change |
 |------|--------|
-| `src/utils/build_notebook.py` | 6 text corrections (M 8.8 → correct labels); Section 4 table fixed; Section 6 magnitude disclosure added; Section 11 forecast ranges corrected |
-| `docs/research_memo.md` | Section 1.1 table fixed; Section 1.4 magnitude description corrected with audit note; Section 2 limitations items 8 and 9 added |
-| `README.md` | Key findings table corrected; EPS reference corrected to PNG |
-| `analysis.ipynb` | Rebuilt and re-executed (all figures regenerated) |
-
-**CSV not modified** (conservative: preserve source document values pending USGS cross-validation).
+| `data/master_catalog_spatial_v2.csv` | `magnitude_analysis` column added |
+| `src/utils/build_notebook.py` | Identity corrections; `magnitude_analysis` used in all analysis code; forecast text corrected; scale disclosure added; historical gaps documented |
+| `docs/research_memo.md` | Count table fixed; identity corrections; limitations updated |
+| `README.md` | Key findings table corrected; EPS→PNG reference |
+| `AUDIT_FIXES.md` | This file |
+| `analysis.ipynb` | Rebuilt and re-executed |

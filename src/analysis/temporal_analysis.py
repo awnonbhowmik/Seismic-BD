@@ -36,32 +36,47 @@ TBL_DIR      = PROJECT_ROOT / "outputs" / "tables"
 FIG_DIR.mkdir(parents=True, exist_ok=True)
 TBL_DIR.mkdir(parents=True, exist_ok=True)
 
+FS = 14
 STYLE = {
-    "font.family":   "DejaVu Sans",
-    "font.size":     11,
-    "axes.spines.top":    False,
-    "axes.spines.right":  False,
-    "axes.grid":          True,
-    "grid.alpha":         0.35,
-    "figure.dpi":         150,
-    "savefig.dpi":        150,
-    "savefig.bbox":       "tight",
+    "font.family":          "DejaVu Sans",
+    "font.size":            FS,
+    "axes.labelsize":       FS + 1,
+    "axes.titlesize":       FS + 1,
+    "legend.fontsize":      FS,
+    "xtick.labelsize":      FS,
+    "ytick.labelsize":      FS,
+    "axes.spines.top":      False,
+    "axes.spines.right":    False,
+    "axes.grid":            True,
+    "grid.alpha":           0.35,
+    "grid.color":           "#888888",
+    "axes.edgecolor":       "black",
+    "axes.linewidth":       1.2,
+    "text.color":           "black",
+    "axes.labelcolor":      "black",
+    "xtick.color":          "black",
+    "ytick.color":          "black",
+    "lines.linewidth":      2.2,
+    "patch.linewidth":      0.8,
+    "figure.dpi":           120,
+    "savefig.dpi":          300,
+    "savefig.bbox":         "tight",
 }
 plt.rcParams.update(STYLE)
 
 COMPLETENESS_NOTE = (
-    "⚠ Catalog completeness varies by era. "
+    "Catalog completeness varies by era. "
     "Count trends reflect detection improvements, not real seismicity changes."
 )
 
-# Magnitude bands for colour coding
+# Magnitude bands for colour coding — high-contrast, no light pastels
 MAG_BANDS = {
-    "M<3.0":   (0.0,  3.0, "#b3cde3"),
-    "M3.0–3.9":(3.0,  4.0, "#8db6cd"),
-    "M4.0–4.9":(4.0,  5.0, "#4e8fbd"),
-    "M5.0–5.9":(5.0,  6.0, "#f4a460"),
-    "M6.0–6.9":(6.0,  7.0, "#e07020"),
-    "M≥7.0":   (7.0, 99.0, "#cc2020"),
+    "M<3.0":   (0.0,  3.0, "#5ba3d0"),
+    "M3.0-3.9":(3.0,  4.0, "#2171b5"),
+    "M4.0-4.9":(4.0,  5.0, "#08519c"),
+    "M5.0-5.9":(5.0,  6.0, "#e07020"),
+    "M6.0-6.9":(6.0,  7.0, "#c0392b"),
+    "M>=7.0":  (7.0, 99.0, "#7f1010"),
 }
 
 
@@ -99,19 +114,21 @@ def fig_annual_counts(df: pd.DataFrame):
     annual["rolling5"] = annual["count"].rolling(5, center=True, min_periods=3).mean()
 
     fig, ax = plt.subplots(figsize=(14, 5))
-    ax.bar(annual.index, annual["count"], color="#4e8fbd", alpha=0.7, label="Annual count", width=0.9)
-    ax.plot(annual.index, annual["rolling5"], color="#cc2020", lw=2.5, label="5-yr rolling mean")
+    ax.bar(annual.index, annual["count"], color="#1a6faf", alpha=0.82, label="Annual count", width=0.9,
+           edgecolor="#222222", linewidth=0.4)
+    ax.plot(annual.index, annual["rolling5"], color="#c0392b", lw=2.8, label="5-yr rolling mean")
 
     # Mark key eras
-    ax.axvspan(1918, 1999, alpha=0.05, color="gray", label="Pre-2000 (sparse)")
-    ax.axvspan(2000, 2006, alpha=0.10, color="orange", label="2000–2006 (apparent gap)")
+    ax.axvspan(1918, 1999, alpha=0.07, color="red",    label="Pre-2000 (sparse)")
+    ax.axvspan(2000, 2006, alpha=0.18, color="orange", label="2000-2006 (apparent gap)")
 
-    ax.set_xlabel("Year")
-    ax.set_ylabel("Number of events")
-    ax.set_title("Annual Earthquake Event Counts — Bangladesh & Surroundings (1918–2025)")
-    ax.legend(fontsize=9)
+    ax.set_xlabel("Year", fontsize=FS + 1)
+    ax.set_ylabel("Number of events", fontsize=FS + 1)
+    ax.set_title("Annual Earthquake Event Counts — Bangladesh & Surroundings (1918–2025)",
+                 fontsize=FS + 1, fontweight="bold")
+    ax.legend(fontsize=FS, framealpha=0.92)
     ax.text(0.5, -0.18, COMPLETENESS_NOTE, ha="center", va="top",
-            transform=ax.transAxes, fontsize=8, color="gray", style="italic")
+            transform=ax.transAxes, fontsize=FS - 2, color="#444444", style="italic")
 
     plt.tight_layout()
     fig.savefig(FIG_DIR / "temporal_annual_counts.png")
@@ -141,15 +158,17 @@ def fig_decadal_summary(df: pd.DataFrame):
 
     fig, ax = plt.subplots(figsize=(12, 5))
     decadal_ord.plot(kind="bar", stacked=True, ax=ax, color=colours,
-                     width=0.7, edgecolor="white", linewidth=0.5)
+                     width=0.7, edgecolor="white", linewidth=0.6)
 
-    ax.set_xlabel("Decade")
-    ax.set_ylabel("Number of events")
-    ax.set_title("Events by Decade and Magnitude Band — Bangladesh Earthquake Catalog")
-    ax.set_xticklabels([f"{int(d)}s" for d in decadal_ord.index], rotation=45, ha="right")
-    ax.legend(title="Magnitude band", bbox_to_anchor=(1.01, 1), loc="upper left", fontsize=9)
+    ax.set_xlabel("Decade", fontsize=FS + 1)
+    ax.set_ylabel("Number of events", fontsize=FS + 1)
+    ax.set_title("Events by Decade and Magnitude Band — Bangladesh Earthquake Catalog",
+                 fontsize=FS + 1, fontweight="bold")
+    ax.set_xticklabels([f"{int(d)}s" for d in decadal_ord.index], rotation=45, ha="right",
+                       fontsize=FS)
+    ax.legend(title="Magnitude band", bbox_to_anchor=(1.01, 1), loc="upper left", fontsize=FS)
     ax.text(0.5, -0.22, COMPLETENESS_NOTE, ha="center", va="top",
-            transform=ax.transAxes, fontsize=8, color="gray", style="italic")
+            transform=ax.transAxes, fontsize=FS - 2, color="#444444", style="italic")
 
     plt.tight_layout()
     fig.savefig(FIG_DIR / "temporal_decadal_summary.png")
@@ -164,29 +183,40 @@ def fig_decadal_summary(df: pd.DataFrame):
 # ── Figure 3: Magnitude-stratified annual counts ──────────────────────────────
 
 def fig_magnitude_stratified(df: pd.DataFrame):
-    """Annual counts for three magnitude thresholds (M≥3, M≥4, M≥5)."""
+    """Annual counts for three magnitude thresholds (M>=3, M>=4, M>=5)."""
     thresholds = [3.0, 4.0, 5.0]
-    colours    = ["#4e8fbd", "#e07020", "#cc2020"]
-    labels     = ["M≥3.0", "M≥4.0", "M≥5.0"]
+    colours    = ["#1a6faf", "#e25c00", "#c0392b"]
+    labels     = ["M >= 3.0", "M >= 4.0", "M >= 5.0"]
 
-    fig, axes = plt.subplots(3, 1, figsize=(14, 10), sharex=True)
+    fig, axes = plt.subplots(3, 1, figsize=(14, 13), sharex=True)
+    fig.subplots_adjust(top=0.93, bottom=0.10, hspace=0.38)
 
     for ax, thr, col, lbl in zip(axes, thresholds, colours, labels):
         sub = df[df["magnitude"] >= thr].dropna(subset=["year"])
         counts = sub.groupby("year").size().astype(int)
-        ax.bar(counts.index, counts.values, color=col, alpha=0.75, width=0.9)
+        ax.bar(counts.index, counts.values, color=col, alpha=0.82, width=0.9,
+               edgecolor="#222222", linewidth=0.4,
+               label="Annual count")
         roll = counts.rolling(5, center=True, min_periods=3).mean()
-        ax.plot(counts.index, roll.values, color="black", lw=1.8)
-        ax.set_ylabel("Count")
-        ax.set_title(f"{lbl} events per year (n={len(sub)})")
-        ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True))
+        ax.plot(counts.index, roll.values, color="black", lw=2.2,
+                label="5-yr rolling mean")
+        ax.set_ylabel("Count", fontsize=FS)
+        # Title placed inside panel as a text box to avoid colliding with adjacent panels
+        ax.text(0.02, 0.96, f"{lbl}  —  $n = {len(sub)}$ events",
+                ha="left", va="top", transform=ax.transAxes,
+                fontsize=FS, fontweight="bold", color=col,
+                bbox=dict(boxstyle="round,pad=0.25", fc="white", alpha=0.85, ec="none"))
+        ax.yaxis.set_major_locator(ticker.MaxNLocator(integer=True, nbins=6))
+        ax.legend(fontsize=FS - 1, loc="upper right", framealpha=0.92)
 
-    axes[-1].set_xlabel("Year")
-    axes[0].text(0.5, 1.05, COMPLETENESS_NOTE, ha="center", va="bottom",
-                 transform=axes[0].transAxes, fontsize=8, color="gray", style="italic")
+    axes[-1].set_xlabel("Year", fontsize=FS + 1)
 
-    fig.suptitle("Magnitude-Stratified Annual Event Counts", y=1.01, fontsize=13, fontweight="bold")
-    plt.tight_layout()
+    # Suptitle at top, note at bottom — no overlap with panel content
+    fig.suptitle("Magnitude-Stratified Annual Event Counts",
+                 y=0.97, fontsize=FS + 2, fontweight="bold")
+    fig.text(0.5, 0.02, COMPLETENESS_NOTE, ha="center", va="bottom",
+             fontsize=FS - 2, color="#444444", style="italic")
+
     fig.savefig(FIG_DIR / "temporal_magnitude_stacked.png")
     plt.close(fig)
     print("  Saved: temporal_magnitude_stacked.png")
@@ -207,15 +237,16 @@ def fig_seasonality(df: pd.DataFrame):
 
     fig, ax = plt.subplots(figsize=(9, 4))
     bars = ax.bar(range(1, 13), monthly_counts.reindex(range(1, 13), fill_value=0),
-                  color="#4e8fbd", alpha=0.8, edgecolor="white")
+                  color="#1a6faf", alpha=0.82, edgecolor="#222222", linewidth=0.4)
     ax.set_xticks(range(1, 13))
-    ax.set_xticklabels(month_labels)
-    ax.set_xlabel("Month")
-    ax.set_ylabel("Number of events")
-    ax.set_title("Seasonality: Events by Month of Year\n(2007–2025, post-completeness-threshold period)")
-    ax.axhline(monthly_counts.mean(), color="#e07020", lw=2, ls="--",
+    ax.set_xticklabels(month_labels, fontsize=FS)
+    ax.set_xlabel("Month", fontsize=FS + 1)
+    ax.set_ylabel("Number of events", fontsize=FS + 1)
+    ax.set_title("Seasonality: Events by Month of Year\n(2007-2025, post-completeness-threshold period)",
+                 fontsize=FS + 1, fontweight="bold")
+    ax.axhline(monthly_counts.mean(), color="#e25c00", lw=2.5, ls="--",
                label=f"Mean = {monthly_counts.mean():.0f}")
-    ax.legend()
+    ax.legend(fontsize=FS, framealpha=0.92)
 
     plt.tight_layout()
     fig.savefig(FIG_DIR / "temporal_seasonality.png")
@@ -236,15 +267,21 @@ def fig_decade_magnitude_box(df: pd.DataFrame):
 
     fig, ax = plt.subplots(figsize=(10, 5))
     bp = ax.boxplot(data_by_decade, tick_labels=labels, patch_artist=True,
-                    medianprops=dict(color="black", lw=2))
+                    medianprops=dict(color="black", lw=2.5),
+                    whiskerprops=dict(lw=1.8),
+                    capprops=dict(lw=1.8),
+                    flierprops=dict(marker="o", markersize=5, markerfacecolor="#666666",
+                                   markeredgecolor="#333333", linewidth=0.6))
 
-    colors = ["#b3cde3", "#8db6cd", "#4e8fbd"][:len(decades)]
+    colors = ["#5ba3d0", "#2171b5", "#08519c"][:len(decades)]
     for patch, color in zip(bp["boxes"], colors):
         patch.set_facecolor(color)
+        patch.set_alpha(0.85)
 
-    ax.set_xlabel("Decade")
-    ax.set_ylabel("Magnitude")
-    ax.set_title("Magnitude Distribution by Decade (2000–2025)")
+    ax.set_xlabel("Decade", fontsize=FS + 1)
+    ax.set_ylabel("Magnitude", fontsize=FS + 1)
+    ax.set_title("Magnitude Distribution by Decade (2000-2025)",
+                 fontsize=FS + 1, fontweight="bold")
 
     plt.tight_layout()
     fig.savefig(FIG_DIR / "temporal_decade_magnitude_box.png")

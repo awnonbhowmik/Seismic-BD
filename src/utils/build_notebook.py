@@ -147,7 +147,7 @@ PALETTE = {
 }
 # Magnitude band colors: lowest band lightened just enough to distinguish;
 # darker overall than the original pale-blue series.
-MAG_COLORS = ["#9ecae1", "#4292c6", "#08519c", "#fd8d3c", "#d94701", "#7f2704"]
+MAG_COLORS = ["#5ba3d0", "#2171b5", "#084594", "#fd8d3c", "#d94701", "#7f2704"]
 
 DHAKA_LAT, DHAKA_LON = 23.8103, 90.4125
 
@@ -665,10 +665,11 @@ ax.hist(df_mod["magnitude_analysis"].dropna(), bins=bins, color=PALETTE["orange"
         alpha=0.72, edgecolor="white", lw=0.5, label=r"2007--2025")
 for mv, col, ls in [(4.0, PALETTE["red"], "--"), (5.0, PALETTE["gray"], ":")]:
     ax.axvline(mv, color=col, ls=ls, lw=2.0, label=f"$M = {mv}$")
-ax.set_xlabel(r"Magnitude ($M$)")
-ax.set_ylabel(r"$N$ events")
-ax.set_title(r"\textbf{(a)} Magnitude histogram", fontweight="bold")
-ax.legend(loc="upper right", framealpha=0.92)
+ax.set_xlabel(r"Magnitude ($M$)", color="black")
+ax.set_ylabel(r"$N$ events", color="black")
+ax.set_title(r"\textbf{(a)} Magnitude histogram", fontweight="bold", color="black")
+ax.tick_params(labelcolor="black", color="black")
+ax.legend(loc="upper right", framealpha=0.92, labelcolor="black")
 
 # (b) ECDF
 ax = axes[1]
@@ -680,12 +681,13 @@ for sub, lbl, col, ls in [
     ax.step(m, np.linspace(0, 1, len(m)), lw=2.2, color=col, ls=ls,
             label=f"{lbl}  ($n={len(m)}$)")
 for mv in [3, 4, 5, 6]:
-    ax.axvline(mv, color="#888888", ls=":", lw=1.4)
-    ax.text(mv+0.05, 0.05, f"$M{mv}$", color="#333333", fontsize=FS-1, fontweight="bold")
-ax.set_xlabel(r"Magnitude ($M$)")
-ax.set_ylabel(r"Cumulative proportion")
-ax.set_title(r"\textbf{(b)} Empirical CDF", fontweight="bold")
-ax.legend(loc="lower right", framealpha=0.92)
+    ax.axvline(mv, color="#444444", ls=":", lw=1.8)
+    ax.text(mv+0.05, 0.05, f"$M{mv}$", color="black", fontsize=FS-1, fontweight="bold")
+ax.set_xlabel(r"Magnitude ($M$)", color="black")
+ax.set_ylabel(r"Cumulative proportion", color="black")
+ax.set_title(r"\textbf{(b)} Empirical CDF", fontweight="bold", color="black")
+ax.tick_params(labelcolor="black", color="black")
+ax.legend(loc="lower right", framealpha=0.92, labelcolor="black")
 
 # (c) Gutenberg-Richter
 ax = axes[2]
@@ -707,16 +709,17 @@ fit_label = (rf"G-R fit: $b = {b_lin:.2f}$,  $R^2 = {r_val**2:.3f}$" + "\n"
 ax.plot(mbins[nz], intercept+slope*mbins[nz], color=PALETTE["red"], lw=2.5,
         label=fit_label)
 ax.axvline(Mc, color=PALETTE["gray"], ls="--", lw=1.8, label=rf"$M_c = {Mc}$")
-ax.set_xlabel(r"Magnitude ($M$)")
-ax.set_ylabel(r"$\log_{10}(N \geq M)$")
-ax.set_title(r"\textbf{(c)} Gutenberg--Richter (2007--2025)", fontweight="bold")
-ax.legend(loc="upper right", framealpha=0.92)
+ax.set_xlabel(r"Magnitude ($M$)", color="black")
+ax.set_ylabel(r"$\log_{10}(N \geq M)$", color="black")
+ax.set_title(r"\textbf{(c)} Gutenberg--Richter (2007--2025)", fontweight="bold", color="black")
+ax.tick_params(labelcolor="black", color="black")
+ax.legend(loc="upper right", framealpha=0.92, labelcolor="black")
 ax.text(0.03, 0.08,
-    r"\textit{Caution: true $M_c \approx 3.5$--$4.0$;}" + "\n" +
-    r"\textit{$b$-value is indicative only.}",
-    ha="left", va="bottom", transform=ax.transAxes, fontsize=FS-2,
-    color="#555555",
-    bbox=dict(boxstyle="round,pad=0.35", fc="white", ec="#cccccc", alpha=0.92))
+    r"Caution: true $M_c \approx 3.5$--$4.0$;" + "\n" +
+    r"$b$-value is indicative only.",
+    ha="left", va="bottom", transform=ax.transAxes, fontsize=FS-1,
+    color="black", fontweight="bold",
+    bbox=dict(boxstyle="round,pad=0.35", fc="white", ec="#888888", alpha=0.92))
 
 plt.tight_layout()
 save_fig("fig3_magnitude_gr", fig)
@@ -843,19 +846,19 @@ plt.show()
 
 CELLS.append(code(r"""# ── Source corridor map ───────────────────────────────────────────────────────
 CORRIDOR_STYLE = {
-    "BD_domestic":           (PALETTE["green"],   "o", 0.9),
-    "Sylhet_Region":         ("#4dac26",           "o", 0.85),
-    "Chittagong_Hills":      ("#98df8a",           "o", 0.85),
-    "Assam_Meghalaya":       (PALETTE["blue"],     "o", 0.7),
-    "Bhutan_E_Himalaya":     (PALETTE["purple"],   "o", 0.7),
-    "Nepal_Himalaya":        ("#9467bd",           "o", 0.7),
-    "Myanmar_India_Border":  (PALETTE["red"],      "o", 0.65),
-    "Myanmar_Interior":      (PALETTE["orange"],   "o", 0.65),
-    "Bay_of_Bengal":         ("#aec7e8",           "s", 0.7),
-    "Andaman_Nicobar":       ("#bcbd22",           "s", 0.7),
-    "South_Asia_Interior":   (PALETTE["gray"],     "o", 0.5),
-    "SE_Asia_Far":           ("#c49c94",           "o", 0.5),
-    "Other_Distant":         ("#dddddd",           "o", 0.4),
+    "BD_domestic":           (PALETTE["green"],   "o", 0.92),
+    "Sylhet_Region":         ("#2e8b1a",           "o", 0.90),
+    "Chittagong_Hills":      ("#2daa30",           "o", 0.90),
+    "Assam_Meghalaya":       (PALETTE["blue"],     "o", 0.82),
+    "Bhutan_E_Himalaya":     (PALETTE["purple"],   "o", 0.82),
+    "Nepal_Himalaya":        ("#6a3ab0",           "o", 0.82),
+    "Myanmar_India_Border":  (PALETTE["red"],      "o", 0.82),
+    "Myanmar_Interior":      (PALETTE["orange"],   "o", 0.82),
+    "Bay_of_Bengal":         ("#1e7bb5",           "s", 0.88),
+    "Andaman_Nicobar":       ("#8b8b00",           "s", 0.88),
+    "South_Asia_Interior":   (PALETTE["gray"],     "o", 0.80),
+    "SE_Asia_Far":           ("#b5451b",           "o", 0.82),
+    "Other_Distant":         ("#888888",           "o", 0.72),
 }
 
 fig, ax = plt.subplots(figsize=(13, 9))
@@ -993,8 +996,8 @@ tbl6 = pivot8.assign(Total=pivot8.sum(axis=1))
 tbl6.index.name = "Country"
 show_table(tbl6, "Table 6 — Events per Country by Magnitude Band (top 8)", 0)
 
-# Seaborn sequential palette for magnitude severity (light→dark = low→high)
-band_colors = ["#c6dbef", "#6baed6", "#2171b5", "#084594"]
+# Seaborn sequential palette for magnitude severity (medium→dark = low→high)
+band_colors = ["#6baed6", "#3182bd", "#08519c", "#08306b"]
 
 fig, ax = plt.subplots(figsize=(13, 7))
 pivot8.plot(kind="barh", stacked=True, ax=ax, color=band_colors,
@@ -1598,38 +1601,43 @@ kde_est = gaussian_kde(xy_data, bw_method=0.25)
 Z = kde_est(positions).reshape(LON_G.shape)
 
 fig, ax = plt.subplots(1, 1, figsize=(14, 10))
-ax.set_facecolor("#cde8f0")
+ax.set_facecolor("#7fb8d8")   # richer ocean blue
 
 world_clip = world.clip(box(BBOX[0], BBOX[1], BBOX[2], BBOX[3]))
-world_clip.plot(ax=ax, color="#f5f5f0", edgecolor="#aaaaaa", lw=0.4, zorder=1)
-bd.plot(ax=ax, color="none", edgecolor="#2d6a2d", lw=1.2, zorder=2)
+world_clip.plot(ax=ax, color="#c0bdb0", edgecolor="#555555", lw=0.7, zorder=1)
+bd.plot(ax=ax, color="none", edgecolor="#1a5c1a", lw=1.8, zorder=2)
 
-# KDE filled contours
-lvls = np.percentile(Z[Z > 0], np.linspace(40, 100, 18))
+# KDE filled contours — start from 30th percentile so outer rings are denser/darker
+lvls = np.percentile(Z[Z > 0], np.linspace(30, 100, 20))
 lvls = np.unique(lvls)
 cf = ax.contourf(LON_G, LAT_G, Z, levels=lvls,
-                 cmap="YlOrRd", alpha=0.82, zorder=3)
+                 cmap="YlOrRd", alpha=0.88, zorder=3)
+# Contour lines: darker and more visible
 ax.contour(LON_G, LAT_G, Z, levels=lvls[::3],
-           colors="saddlebrown", linewidths=0.5, alpha=0.4, zorder=4)
+           colors="#5c2000", linewidths=0.9, alpha=0.70, zorder=4)
 
 cbar = fig.colorbar(cf, ax=ax, shrink=0.6, pad=0.02)
-cbar.set_label(r"Seismic density (KDE)", fontsize=FS+1)
-cbar.ax.tick_params(labelsize=FS-1)
+cbar.set_label(r"Seismic density (KDE)", fontsize=FS+1, color="black")
+cbar.ax.tick_params(labelsize=FS-1, labelcolor="black", color="black")
+cbar.ax.yaxis.label.set_color("black")
 cbar.set_ticks([])
 
-# Dhaka marker
-ax.plot(DHAKA_LON, DHAKA_LAT, "r*", ms=14, zorder=8, label="Dhaka")
-ax.text(DHAKA_LON + 0.4, DHAKA_LAT, "Dhaka", fontsize=FS, color="darkred",
-        fontweight="bold", zorder=9)
+# Dhaka marker — white-outlined star so it pops off the hotspot centre
+ax.plot(DHAKA_LON, DHAKA_LAT, "*", ms=18, zorder=8, color="#cc0000",
+        markeredgecolor="white", markeredgewidth=1.2, label="Dhaka")
+ax.text(DHAKA_LON + 0.5, DHAKA_LAT + 0.25, r"\textbf{Dhaka}",
+        fontsize=FS, color="black", fontweight="bold", zorder=9,
+        bbox=dict(boxstyle="round,pad=0.2", fc="white", alpha=0.80, ec="none"))
 
 ax.set_xlim(BBOX[0], BBOX[2]); ax.set_ylim(BBOX[1], BBOX[3])
-ax.set_xlabel(r"Longitude ($^\circ$E)", fontsize=FS+2)
-ax.set_ylabel(r"Latitude ($^\circ$N)", fontsize=FS+2)
-ax.tick_params(labelsize=FS)
+ax.set_xlabel(r"Longitude ($^\circ$E)", fontsize=FS+2, color="black")
+ax.set_ylabel(r"Latitude ($^\circ$N)", fontsize=FS+2, color="black")
+ax.tick_params(labelsize=FS, labelcolor="black", color="black")
 ax.set_title(r"Seismic hotspot density map --- modern catalog (2007--2024)",
-             fontsize=FS+4, fontweight="bold", pad=10)
-ax.legend(fontsize=FS, loc="lower right", framealpha=0.92)
-ax.grid(True, alpha=0.2, lw=0.4, ls=":")
+             fontsize=FS+4, fontweight="bold", pad=10, color="black")
+ax.legend(fontsize=FS, loc="lower right", framealpha=0.95, edgecolor="#333333",
+          labelcolor="black")
+ax.grid(True, alpha=0.25, lw=0.5, ls=":")
 
 plt.tight_layout()
 save_map("fig13_kde_hotspot_map", fig)
@@ -1880,7 +1888,7 @@ for era, col in ERA_COLORS.items():
     sub = df_mt[df_mt.era == era]
     sc  = ax.scatter(sub.plot_year, sub.magnitude_analysis,
                      c=col, s=mag_size(sub.magnitude_analysis, base=6, scale=2.0),
-                     alpha=0.50, edgecolors="none", zorder=3, label=era)
+                     alpha=0.65, edgecolors="none", zorder=3, label=era)
 
 # Label large events M >= 6.5
 big = df_mt[df_mt.magnitude_analysis >= 6.5].sort_values("magnitude", ascending=False)
@@ -2143,23 +2151,24 @@ def plot_ep(ax, lam_arr, title_str, note=None):
         ax.plot(M_range, prob * 100, ls=ls, color=col, lw=3.0,
                 label=rf"$T = {T}$ yr")
 
-    # Reference 10% and 50% lines — dark and clearly labelled
+    # Reference 10% and 50% lines — black, clearly labelled
     for p_ref, ls in [(10, ":"), (50, "--")]:
-        ax.axhline(p_ref, color="#333333", ls=ls, lw=1.8, alpha=0.9)
+        ax.axhline(p_ref, color="black", ls=ls, lw=1.8)
         ax.text(7.98, p_ref + 2, rf"{p_ref}\%", ha="right", va="bottom",
-                fontsize=FS-1, color="#333333", fontweight="bold")
+                fontsize=FS, color="black", fontweight="bold")
 
-    ax.set_xlabel(r"Magnitude ($M$)", fontsize=FS+2)
-    ax.set_ylabel(r"Exceedance probability (\%)", fontsize=FS+2)
-    ax.set_title(title_str, fontweight="bold", fontsize=FS+2)
+    ax.set_xlabel(r"Magnitude ($M$)", fontsize=FS+2, color="black")
+    ax.set_ylabel(r"Exceedance probability (\%)", fontsize=FS+2, color="black")
+    ax.set_title(title_str, fontweight="bold", fontsize=FS+2, color="black")
     ax.set_xlim(3.0, 8.0)
     ax.set_ylim(0, 108)
-    ax.tick_params(labelsize=FS)
-    ax.legend(fontsize=FS, framealpha=0.95, edgecolor="#333333", loc="upper right")
+    ax.tick_params(labelsize=FS, labelcolor="black", color="black")
+    ax.legend(fontsize=FS, framealpha=0.95, edgecolor="#333333", loc="upper right",
+              labelcolor="black")
     if note:
-        ax.text(0.03, 0.08, note, transform=ax.transAxes, fontsize=FS-1,
-                color="#333333", style="italic",
-                bbox=dict(boxstyle="round,pad=0.3", fc="white", alpha=0.88, ec="#aaaaaa"))
+        ax.text(0.03, 0.08, note, transform=ax.transAxes, fontsize=FS,
+                color="black", fontweight="bold",
+                bbox=dict(boxstyle="round,pad=0.3", fc="white", alpha=0.92, ec="#888888"))
 
 plot_ep(axes[0], lam_all_arr,
         r"\textbf{(a)} All events",

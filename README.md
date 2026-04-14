@@ -84,8 +84,8 @@ Seismic-BD/
 │   ├── bangladesh_boundary.gpkg      Bangladesh admin boundary
 │   └── world_countries.gpkg          World countries boundary
 ├── outputs/
-│   ├── figures/                      Publication figures (EPS 300 dpi + PNG preview)
-│   └── maps/                         Map figures (EPS 300 dpi + PNG preview)
+│   ├── figures/                      Publication figures (PNG, 300 dpi)
+│   └── maps/                         Map figures (PNG, 300 dpi)
 ├── src/
 │   ├── ingest/                       File parsing + scraping scripts
 │   ├── harmonize/                    Master catalog builder
@@ -110,7 +110,8 @@ Seismic-BD/
 | M≥4.0 outside Bangladesh | 94.4% |
 | Top source country | Myanmar (34.2%) |
 | Top source corridor | Myanmar-India Border (28.0%) |
-| Largest event | M 8.8 (2025 Myanmar) |
+| Largest event in catalog | M 8.8 (2025-07-29, Kamchatka, Russia; ~6575 km from Dhaka; BMD-reported — requires USGS cross-check) |
+| Largest Myanmar event in catalog | M 7.3 (2025-03-28, Mandalay, Myanmar; USGS: M 7.7) |
 
 ## Recommended research direction
 

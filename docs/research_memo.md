@@ -18,6 +18,8 @@ The BMD catalog is real and usable but has pronounced era effects that make dire
 | 2000–2006 | 0 | Clear reporting/digitisation gap — NOT seismically quiet |
 | 2007–2022 | 776 | Modern instrument era; more systematic; felt-in-BD threshold |
 | 2023–2025 | 308 | Multiple overlapping sources; densest coverage |
+| Year unknown | 1 | EV-01151: parsing artefact (all fields NaN); excluded from analyses |
+| **Total** | **1112** | |
 
 **Implication**: Any count-trend analysis spanning the 2000–2006 gap is invalid. Count increases from 1990s to 2010s are entirely explained by detection improvements, not increased seismicity.
 
@@ -60,7 +62,10 @@ The Myanmar-India Border corridor alone accounts for nearly three times the dome
 - Overall range: M 2.5 – M 8.8
 - Mean magnitude: 4.63
 - Largest historical event: M 7.6 (1918, inside Bangladesh — Srimangal earthquake)
-- Largest modern event in catalog: M 8.8 (2025, Myanmar — the Mandalay earthquake sequence)
+- Largest raw magnitude in catalog: M 8.8 (2025-07-29, Kamchatka, Russia — EV-01144, ~6575 km from Dhaka; BMD-reported value **requires USGS cross-check** — not a Myanmar event)
+- Largest Myanmar/regional event in catalog: M 7.3 (2025-03-28, Mandalay, Myanmar — EV-01120; BMD value; USGS reports M 7.7 for this event)
+
+> **AUDIT NOTE (2026-04)**: The manuscript/memo previously described the largest catalog event as "M 8.8 (2025 Myanmar — the Mandalay earthquake sequence)." This is factually incorrect. The M 8.8 event (EV-01144) is located at 52.53°N 160.16°E (Kamchatka, Russia), 6575 km from Dhaka, recorded in the BMD felt-events document. The March 28, 2025 Mandalay earthquake is a separate event (EV-01120, M 7.3 BMD / M 7.7 USGS). The BMD magnitude of 8.8 for the Kamchatka event is itself suspicious and should be cross-validated against USGS; if wrong, the catalog maximum shifts to M 8.7 (2012-04-11 Indian Ocean doublet, EV-00198).
 
 G-R analysis (2007+, conservative Mc = 3.0):
 - b-value (linear regression): 0.591
@@ -86,6 +91,10 @@ The Aki MLE b-value of 0.27 is strongly anomalous (typical: 0.8–1.2). This is 
 6. **Coordinate precision disparity**: Main catalog coordinates are in integer degrees + integer minutes (precision ~1.8 km). Modern files give decimal minutes (precision ~0.02–0.1 km). Spatial clustering analyses in the historical record should use generous tolerance.
 
 7. **No independent cross-validation**: The BMD catalog has not been cross-checked against USGS, ISC, or IMD catalogs. Some events may be mislabeled; some external events that affected Bangladesh may be missing.
+
+8. **Notable historical absences confirmed**: The 1950 Assam earthquake (M 8.6–8.7, 1950-08-15) and 1934 Bihar–Nepal earthquake (M 8.0–8.1, 1934-01-15) are **absent** from the catalog despite being among the largest 20th-century earthquakes felt in Bangladesh. This confirms the pre-2000 record captures only a fraction of significant events. Do not use the pre-2000 catalog to infer historical seismic hazard without independent sources.
+
+9. **Kamchatka M 8.8 event (EV-01144, 2025-07-29)**: The BMD source document records an M 8.8 event at 52.53°N 160.16°E (Kamchatka, Russia), ~6575 km from Dhaka. The BMD-reported magnitude of 8.8 has not been cross-validated against USGS; this should be verified. This event is **not** the 2025 Myanmar earthquake — that event (Mandalay, 2025-03-28) is separately recorded as EV-01120 at M 7.3 (BMD) / M 7.7 (USGS).
 
 ---
 

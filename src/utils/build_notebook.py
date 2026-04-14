@@ -460,9 +460,22 @@ CELLS.append(md(r"""## 4. Catalog completeness
 | 2000–2006 | 0 | **Data gap** — NOT seismically quiet |
 | 2007–2022 | 776 | Modern instrument era; more systematic |
 | 2023–2025 | 308 | Multiple overlapping sources |
+| **Year unknown** | **1** | EV-01151: parsing artefact — all fields NaN; excluded from all analyses |
+| **Total** | **1112** | |
 
 **Key caution**: Count increases across decades reflect improved detection, NOT real seismicity increases.
 Only **magnitude-restricted** analyses ($M \geq 4.5$) are defensible across the full 1918–2025 span.
+
+### Notable historical events absent from this catalog
+
+The following globally-significant events would have been felt in Bangladesh but are **not present** in the BMD catalog (confirmed by inspection of the 1918–1999 record):
+
+| Event | Date | $M$ | Location | Note |
+|-------|------|-----|----------|------|
+| Assam earthquake | 1950-08-15 | 8.6--8.7 | ~28.5°N 96.6°E | One of the largest 20th-century earthquakes; certainly felt in Bangladesh |
+| Bihar--Nepal earthquake | 1934-01-15 | 8.0--8.1 | ~26.6°N 86.8°E | Caused major damage across Nepal and Bihar; likely felt in Bangladesh |
+
+These absences underscore the **incompleteness of the pre-2000 catalog** — even some M$>$8 events are missing. This does not affect the modern (2007+) analyses but is relevant for hazard assessments using the historical record.
 """))
 CELLS.append(code(r"""# ── Annual event counts (publication figure) ───────────────────────────────
 annual = (
@@ -600,7 +613,17 @@ print("Interpretation:", "No significant seasonal pattern (p>0.05)." if p>0.05
 # ══════════════════════════════════════════════════════════════════════════════
 # 6  Magnitude & G-R
 # ══════════════════════════════════════════════════════════════════════════════
-CELLS.append(md(r"## 6. Magnitude distribution \& Gutenberg--Richter analysis"))
+CELLS.append(md(r"""## 6. Magnitude distribution \& Gutenberg--Richter analysis
+
+> **Magnitude scale disclosure**: All magnitudes in the BMD catalog are labeled
+> ``Richter Scale'' in the source documents, but this is almost certainly a heterogeneous
+> mix of $M_L$ (local magnitude), $m_b$ (body-wave), $M_w$ (moment magnitude), and possibly
+> $M_s$ (surface-wave), depending on the reporting agency and era. No magnitude-type column
+> exists in the catalog. Mixing scales without conversion introduces systematic bias, particularly
+> for large events ($M > 6$) where $M_L$ diverges from $M_w$. All statistics and G-R fits below
+> should be interpreted with this caveat in mind. Formal Mw homogenisation is recommended
+> before publication of magnitude-distribution results.
+"""))
 CELLS.append(code(r"""# ── Table 4: Magnitude summary by period ─────────────────────────────────────
 periods = {
     "All events":  df_bmd,
@@ -1133,7 +1156,8 @@ CELLS.append(md(r"""## 10. Research memo & paper direction
 | Top source country | Myanmar (34.2\%) |
 | Top source corridor | Myanmar--India Border (28.0\%) |
 | $b$-value (Aki MLE, $M_c=3$) | 0.27 (anomalously low; true $M_c \approx 3.5$--$4.0$) |
-| Largest event | $M\,8.8$ (2025 Myanmar) |
+| Largest event in catalog | $M\,8.8$ (2025-07-29, Kamchatka, Russia; $\approx$6575 km from Dhaka) |
+| Largest Myanmar event in catalog | $M\,7.3$ (2025-03-28, Mandalay; BMD value; USGS: $M\,7.7$) |
 
 ### Paper direction ranking
 
@@ -1402,18 +1426,19 @@ indicate a real change in detection rate or seismicity. In most categories, the 
 modern period (2007–2024).
 
 **2. Expected annual counts 2026–2030**
-Based on the stationary Poisson model (the most defensible when no trend is detected):
-- **All events**: $\approx 55$–70 earthquakes per year felt/detected in the Bangladesh region
-- **$M \geq 4.0$**: $\approx 48$–62 events per year (the hazard-relevant threshold)
-- **$M \geq 5.0$**: $\approx 16$–20 events per year
-- **Inside Bangladesh**: $\approx 5$–8 per year (domestic seismicity is low)
-- **Cross-border**: $\approx 50$–65 per year (dominates the catalog at every threshold)
+Based on the stationary Poisson model (the most defensible when no trend is detected),
+90\% prediction intervals $[\lambda_{0.05}, \lambda_{0.95}]$ around the historical mean:
+- **All events**: mean $\approx 56$/yr; 90\% PI $\approx [44, 69]$ (all felt/detected events)
+- **$M \geq 4.0$**: mean $\approx 48$/yr; 90\% PI $\approx [37, 60]$ (hazard-relevant threshold)
+- **$M \geq 5.0$**: mean $\approx 15$/yr; 90\% PI $\approx [9, 22]$
+- **Inside Bangladesh**: mean $\approx 5$/yr; 90\% PI $\approx [2, 9]$ (domestic seismicity is low)
+- **Cross-border**: mean $\approx 51$/yr; 90\% PI $\approx [40, 63]$ (dominates the catalog)
 
 **3. Overdispersion**
 The variance-to-mean ratio $>1.0$ for all categories indicates **overdispersion** — year-to-year
 variability is larger than a simple Poisson model predicts. The Negative Binomial model
 captures this, producing wider, more honest prediction intervals. In practice this means
-individual years can deviate substantially from the forecast mean (e.g., M 8.8 Myanmar 2025).
+individual years can deviate substantially from the forecast mean (e.g., the 2025 Kamchatka M 8.8 or the 2025 Mandalay, Myanmar M 7.3 sequence).
 
 **4. Cross-border dominance persists**
 External events are forecast to continue dominating at a ratio of approximately 9:1 relative
@@ -1819,7 +1844,7 @@ CELLS.append(md(r"""### Corridor time-series insights
    confirming that internal Bangladesh seismicity has not accelerated.
 
 4. **The 2020–2025 decade is dominated by the Myanmar–India Border**,
-   especially following the 2025 M8.8 Sagaing mainshock and its aftershock
+   especially following the 2025 Mandalay M 7.3 (BMD; USGS M 7.7) mainshock and its aftershock
    sequence, which will continue to dominate for several years.
 
 **This temporal shift has policy implications**: early-warning investments
@@ -1912,8 +1937,8 @@ CELLS.append(md(r"""### Magnitude--time insights
 3. **Major events and their sequences are clearly visible**:
    - 2015 Nepal M7.8 (Gorkha earthquake) — significant felt reports in Bangladesh
    - 2016 Myanmar M6.8+ sequence — triggered aftershock activity along the Sagaing fault
-   - 2025 Myanmar M8.8 — the largest event in the catalog, generating a prominent
-     aftershock sequence visible as a dense cluster at 2025+
+   - 2025 Mandalay, Myanmar M 7.3 (BMD; USGS M 7.7) — the largest regional event in the 2025 catalog period, generating aftershocks visible as a cluster at 2025+
+   - 2025 Kamchatka, Russia M 8.8 (BMD value; $\approx$6575 km from Dhaka) — the largest raw magnitude in the catalog but a very distant event with minimal Bangladesh impact; **note: BMD-reported magnitude should be cross-checked against USGS**
 
 4. **No evidence of a secular trend in large events** (M ≥ 6) — the apparent
    increase at lower magnitudes is entirely a detection improvement effect, consistent

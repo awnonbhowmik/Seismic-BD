@@ -116,7 +116,6 @@ plt.rcParams.update({
     "figure.dpi":              120,
     "savefig.dpi":             300,
     "savefig.bbox":            "tight",
-    "savefig.format":          "eps",
     # Thicker default lines and patch edges
     "lines.linewidth":         2.5,
     "lines.markersize":        8,
@@ -153,17 +152,15 @@ MAG_COLORS = ["#9ecae1", "#4292c6", "#08519c", "#fd8d3c", "#d94701", "#7f2704"]
 DHAKA_LAT, DHAKA_LON = 23.8103, 90.4125
 
 def save_fig(name, fig=None):
-    # Save as EPS (vector) and PNG at 300 dpi for manuscript embedding.
+    # Save as PNG at 300 dpi for manuscript embedding.
     f = fig or plt.gcf()
-    f.savefig(FIG_DIR / f"{name}.eps", format="eps", dpi=300, bbox_inches="tight")
     f.savefig(FIG_DIR / f"{name}.png", format="png", dpi=300, bbox_inches="tight")
-    print(f"  Saved: {name}.eps / .png")
+    print(f"  Saved: {name}.png")
 
 def save_map(name, fig=None):
     f = fig or plt.gcf()
-    f.savefig(MAP_DIR / f"{name}.eps", format="eps", dpi=300, bbox_inches="tight")
     f.savefig(MAP_DIR / f"{name}.png", format="png", dpi=300, bbox_inches="tight")
-    print(f"  Saved: {name}.eps / .png")
+    print(f"  Saved: {name}.png")
 
 def mag_size(s, base=8, scale=2.2):
     # Marker area proportional to magnitude.

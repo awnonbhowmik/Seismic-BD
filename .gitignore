@@ -5,6 +5,9 @@
 .ipynb_checkpoints/
 *.ipynb_checkpoints
 
+# EPS figures — PNG at 300 dpi is used for manuscript
+*.eps
+
 # OS / editor
 .DS_Store
 Thumbs.db

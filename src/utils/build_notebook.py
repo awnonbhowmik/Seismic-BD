@@ -84,63 +84,85 @@ FIG_DIR.mkdir(parents=True, exist_ok=True)
 MAP_DIR.mkdir(parents=True, exist_ok=True)
 
 # ── Publication-quality matplotlib style ───────────────────────────────────────
-FS = 14        # base font size — all explicit sizes below derive from this
+# FS=16 gives clear readability at journal column widths and after Word scaling.
+FS = 16
 plt.rcParams.update({
-    "text.usetex":           True,
-    "font.family":           "serif",
-    "font.serif":            ["Computer Modern"],
-    "font.size":             FS,
-    "axes.labelsize":        FS + 2,
-    "axes.titlesize":        FS + 2,
-    "legend.fontsize":       FS,
-    "legend.title_fontsize": FS,
-    "xtick.labelsize":       FS,
-    "ytick.labelsize":       FS,
-    "axes.spines.top":       False,
-    "axes.spines.right":     False,
-    "axes.grid":             True,
-    "grid.alpha":            0.3,
-    "grid.linewidth":        0.5,
-    "figure.dpi":            120,
-    "savefig.dpi":           300,
-    "savefig.bbox":          "tight",
-    "savefig.format":        "eps",
-    "lines.linewidth":       2.0,
-    "patch.linewidth":       0.6,
+    "text.usetex":             True,
+    "font.family":             "serif",
+    "font.serif":              ["Computer Modern"],
+    "font.size":               FS,
+    "axes.labelsize":          FS + 2,
+    "axes.titlesize":          FS + 2,
+    "legend.fontsize":         FS,
+    "legend.title_fontsize":   FS,
+    "legend.framealpha":       0.95,
+    "legend.edgecolor":        "#333333",
+    "xtick.labelsize":         FS,
+    "ytick.labelsize":         FS,
+    # High-contrast black text/axes throughout
+    "text.color":              "black",
+    "axes.labelcolor":         "black",
+    "xtick.color":             "black",
+    "ytick.color":             "black",
+    "axes.edgecolor":          "black",
+    "axes.linewidth":          1.2,
+    "axes.spines.top":         False,
+    "axes.spines.right":       False,
+    # Darker, slightly thicker grid so panels read cleanly at small size
+    "axes.grid":               True,
+    "grid.color":              "#888888",
+    "grid.alpha":              0.35,
+    "grid.linewidth":          0.6,
+    "figure.dpi":              120,
+    "savefig.dpi":             300,
+    "savefig.bbox":            "tight",
+    "savefig.format":          "eps",
+    # Thicker default lines and patch edges
+    "lines.linewidth":         2.5,
+    "lines.markersize":        8,
+    "patch.linewidth":         0.8,
 })
 
-# ── Seaborn theme ──────────────────────────────────────────────────────────────
-sns.set_theme(style="whitegrid", palette="muted", font="serif",
-              rc={"axes.labelsize": FS+2, "axes.titlesize": FS+2,
-                  "xtick.labelsize": FS, "ytick.labelsize": FS,
-                  "legend.fontsize": FS})
+# ── Seaborn theme — "deep" palette is higher-contrast than "muted" ─────────────
+sns.set_theme(style="whitegrid", palette="deep", font="serif",
+              rc={"axes.labelsize":      FS+2,
+                  "axes.titlesize":      FS+2,
+                  "xtick.labelsize":     FS,
+                  "ytick.labelsize":     FS,
+                  "legend.fontsize":     FS,
+                  "text.color":         "black",
+                  "axes.labelcolor":    "black",
+                  "xtick.color":        "black",
+                  "ytick.color":        "black"})
 
-# ── Color palette (colorblind-friendly + journal-ready) ────────────────────────
+# ── Color palette (colorblind-safe, high contrast for print/manuscript) ─────────
 PALETTE = {
-    "blue":    "#2166ac",
-    "red":     "#d6604d",
-    "green":   "#1a9850",
-    "orange":  "#f46d43",
-    "purple":  "#762a83",
-    "teal":    "#4dac26",
-    "gray":    "#636363",
-    "light":   "#d9d9d9",
+    "blue":    "#1a6faf",   # deeper blue
+    "red":     "#c0392b",   # darker red
+    "green":   "#1a7a40",   # darker green
+    "orange":  "#e25c00",   # darker orange
+    "purple":  "#6a1f8a",   # darker purple
+    "teal":    "#1e8449",   # darker teal
+    "gray":    "#444444",   # near-black gray (replaces faint #636363)
+    "light":   "#cccccc",
 }
-MAG_COLORS = ["#d1e5f0", "#92c5de", "#4393c3", "#f4a582", "#d6604d", "#b2182b"]
+# Magnitude band colors: lowest band lightened just enough to distinguish;
+# darker overall than the original pale-blue series.
+MAG_COLORS = ["#9ecae1", "#4292c6", "#08519c", "#fd8d3c", "#d94701", "#7f2704"]
 
 DHAKA_LAT, DHAKA_LON = 23.8103, 90.4125
 
 def save_fig(name, fig=None):
-    # Save as EPS (300 dpi) and PNG preview.
+    # Save as EPS (vector) and PNG at 300 dpi for manuscript embedding.
     f = fig or plt.gcf()
     f.savefig(FIG_DIR / f"{name}.eps", format="eps", dpi=300, bbox_inches="tight")
-    f.savefig(FIG_DIR / f"{name}.png", format="png", dpi=150, bbox_inches="tight")
+    f.savefig(FIG_DIR / f"{name}.png", format="png", dpi=300, bbox_inches="tight")
     print(f"  Saved: {name}.eps / .png")
 
 def save_map(name, fig=None):
     f = fig or plt.gcf()
     f.savefig(MAP_DIR / f"{name}.eps", format="eps", dpi=300, bbox_inches="tight")
-    f.savefig(MAP_DIR / f"{name}.png", format="png", dpi=150, bbox_inches="tight")
+    f.savefig(MAP_DIR / f"{name}.png", format="png", dpi=300, bbox_inches="tight")
     print(f"  Saved: {name}.eps / .png")
 
 def mag_size(s, base=8, scale=2.2):
@@ -467,7 +489,8 @@ for ax, col, color, ylabel, title in [
      r"Annual counts --- $M \geq 4.0$"),
 ]:
     roll = annual.set_index("year")[col].rolling(5, center=True, min_periods=2).mean()
-    ax.bar(annual["year"], annual[col], color=color, alpha=0.55, width=0.9, label="Annual count")
+    ax.bar(annual["year"], annual[col], color=color, alpha=0.78, width=0.9,
+           edgecolor="#222222", linewidth=0.4, label="Annual count")
     ax.plot(roll.index, roll.values, color=PALETTE["red"], lw=2.5,
             label=r"5-yr rolling mean")
     ax.axvspan(1918, 1999, alpha=0.07, color="red",    label=r"Pre-2000 (sparse)")
@@ -616,9 +639,9 @@ bins = np.arange(2.0, 9.25, 0.25)
 # (a) Histogram
 ax = axes[0]
 ax.hist(df_bmd["magnitude"].dropna(), bins=bins, color=PALETTE["blue"],
-        alpha=0.7, edgecolor="white", lw=0.4, label=r"All (1918--2025)")
+        alpha=0.80, edgecolor="white", lw=0.5, label=r"All (1918--2025)")
 ax.hist(df_mod["magnitude"].dropna(), bins=bins, color=PALETTE["orange"],
-        alpha=0.6, edgecolor="white", lw=0.4, label=r"2007--2025")
+        alpha=0.72, edgecolor="white", lw=0.5, label=r"2007--2025")
 for mv, col, ls in [(4.0, PALETTE["red"], "--"), (5.0, PALETTE["gray"], ":")]:
     ax.axvline(mv, color=col, ls=ls, lw=2.0, label=f"$M = {mv}$")
 ax.set_xlabel(r"Magnitude ($M$)")
@@ -636,8 +659,8 @@ for sub, lbl, col, ls in [
     ax.step(m, np.linspace(0, 1, len(m)), lw=2.2, color=col, ls=ls,
             label=f"{lbl}  ($n={len(m)}$)")
 for mv in [3, 4, 5, 6]:
-    ax.axvline(mv, color=PALETTE["light"], ls=":", lw=1.0)
-    ax.text(mv+0.05, 0.05, f"$M{mv}$", color=PALETTE["gray"], fontsize=FS-1)
+    ax.axvline(mv, color="#888888", ls=":", lw=1.4)
+    ax.text(mv+0.05, 0.05, f"$M{mv}$", color="#333333", fontsize=FS-1, fontweight="bold")
 ax.set_xlabel(r"Magnitude ($M$)")
 ax.set_ylabel(r"Cumulative proportion")
 ax.set_title(r"\textbf{(b)} Empirical CDF", fontweight="bold")
@@ -1000,8 +1023,8 @@ for lo, hi, lbl, col in [(0,4,r"$M<4$",MAG_COLORS[1]), (4,5,r"$M$ 4--5",MAG_COLO
     b = df_dist[(df_dist.magnitude>=lo)&(df_dist.magnitude<hi)]
     if len(b):
         sns.histplot(b["distance_dhaka_km"], bins=bins, ax=ax, color=col,
-                     alpha=0.6, label=rf"{lbl} ($n={len(b)}$)",
-                     edgecolor="white", lw=0.4)
+                     alpha=0.78, label=rf"{lbl} ($n={len(b)}$)",
+                     edgecolor="white", lw=0.5)
 ax.axvline(300, color=PALETTE["gray"], ls="--", lw=2.0, label=r"300 km")
 ax.set_xlabel(r"Distance from Dhaka (km)")
 ax.set_ylabel(r"$N$ events")
@@ -1048,47 +1071,48 @@ pal_cor = [CORRIDOR_STYLE.get(c, (PALETTE["gray"],"o",0.7))[0]
            for c in top_cor["Corridor"]]
 labels_cor = [c.replace("_"," ") for c in top_cor["Corridor"]]
 
-# Tall figure — 10 corridors need space
-fig, axes = plt.subplots(1, 2, figsize=(18, 9))
-fig.subplots_adjust(wspace=0.40)
+# Tall figure — 10 corridors need space; wider for legible corridor labels
+fig, axes = plt.subplots(1, 2, figsize=(20, 10))
+fig.subplots_adjust(wspace=0.44)
 
 # (a) Event count
 ax = axes[0]
 sns.barplot(y=labels_cor, x=top_cor["$N$"].tolist(),
             palette=pal_cor, orient="h", ax=ax,
-            edgecolor="white", linewidth=0.6, alpha=0.88)
+            edgecolor="#222222", linewidth=0.8, alpha=0.92)
 ax.set_xlabel(r"$N$ events")
 ax.set_ylabel("")
 ax.set_yticklabels(labels_cor, fontsize=FS)
 ax.set_title(r"\textbf{(a)} Event count by source corridor", fontweight="bold")
 
 x_max_c = top_cor["$N$"].max()
-ax.set_xlim(0, x_max_c * 1.20)
+ax.set_xlim(0, x_max_c * 1.22)
 for i, n in enumerate(top_cor["$N$"]):
     ax.text(int(n) + x_max_c * 0.015, i, str(int(n)),
-            va="center", ha="left", fontsize=FS, color="#333333", fontweight="bold")
+            va="center", ha="left", fontsize=FS, color="black", fontweight="bold")
 
-# (b) Mean vs max magnitude — dot + whisker approach avoids bar overlap entirely
+# (b) Mean vs max magnitude
 ax = axes[1]
 y_pos = np.arange(len(top_cor))
 
-# Max M: light background bar
-ax.barh(y_pos, top_cor["$M$ max"], height=0.55, color=pal_cor, alpha=0.25,
-        edgecolor="none", label=r"Max $M$")
+# Max M: semi-opaque background bar (was 0.25 — too faint; now 0.45)
+ax.barh(y_pos, top_cor["$M$ max"], height=0.55, color=pal_cor, alpha=0.45,
+        edgecolor="#333333", linewidth=0.6, label=r"Max $M$")
 # Mean M: solid foreground bar
-ax.barh(y_pos, top_cor[r"$\bar{M}$"], height=0.55, color=pal_cor, alpha=0.88,
-        edgecolor="white", linewidth=0.5, label=r"Mean $M$")
-# Mean M marker
-ax.scatter(top_cor[r"$\bar{M}$"], y_pos, color="white", s=40, zorder=5, lw=0)
+ax.barh(y_pos, top_cor[r"$\bar{M}$"], height=0.55, color=pal_cor, alpha=0.92,
+        edgecolor="#222222", linewidth=0.7, label=r"Mean $M$")
+# Mean M marker — dark for contrast
+ax.scatter(top_cor[r"$\bar{M}$"], y_pos, color="white", s=50, zorder=5,
+           linewidths=1.2, edgecolors="#222222")
 
-ax.axvline(5.0, color="#555555", ls="--", lw=1.8, label=r"$M = 5.0$")
+ax.axvline(5.0, color="black", ls="--", lw=2.0, label=r"$M = 5.0$")
 ax.set_xlabel(r"Magnitude ($M$)")
 ax.set_ylabel("")
 ax.set_yticks(y_pos)
 ax.set_yticklabels(labels_cor, fontsize=FS)
 ax.set_title(r"\textbf{(b)} Mean and max magnitude by corridor", fontweight="bold")
 ax.set_xlim(0, top_cor["$M$ max"].max() * 1.10)
-ax.legend(fontsize=FS, loc="lower right", framealpha=0.92, edgecolor="#aaaaaa")
+ax.legend(fontsize=FS, loc="lower right", framealpha=0.95, edgecolor="#333333")
 
 plt.tight_layout()
 save_fig("fig10_corridor_analysis", fig)
@@ -1263,9 +1287,9 @@ for k, r in results.items():
 """))
 
 CELLS.append(code(r"""# ── Forecast plot: historical + Poisson forecast + PI bands ──────────────────
-fig, axes = plt.subplots(2, 3, figsize=(20, 12))
+fig, axes = plt.subplots(2, 3, figsize=(22, 14))
 axes = axes.flatten()
-fig.subplots_adjust(hspace=0.38, wspace=0.30)
+fig.subplots_adjust(hspace=0.44, wspace=0.35)
 
 SUBPLOT_SPECS = [
     ("All events",        r"All events",         lambda d: d[d.year==2025]),
@@ -1280,44 +1304,46 @@ colors_key = [PALETTE["blue"], PALETTE["orange"], PALETTE["red"],
 for ax, (key, title_tex, fn2025), col in zip(axes[:5], SUBPLOT_SPECS, colors_key):
     r = results[key]
 
-    # Darker bar for historical record
-    ax.bar(r["years_tr"], r["counts_tr"], color=col, alpha=0.70, width=0.8,
+    # Historical bars — solid, high alpha
+    ax.bar(r["years_tr"], r["counts_tr"], color=col, alpha=0.82, width=0.8,
+           edgecolor="#222222", linewidth=0.6,
            label=r"Historical (2007--2024)", zorder=3)
 
     n2025 = len(fn2025(df_bmd))
     if n2025 > 0:
-        ax.bar([2025], [n2025], color=col, alpha=0.45, width=0.8,
-               hatch="///", label=rf"2025 partial ($n={n2025}$)", zorder=3)
+        ax.bar([2025], [n2025], color=col, alpha=0.55, width=0.8,
+               hatch="///", edgecolor="#222222", linewidth=0.6,
+               label=rf"2025 partial ($n={n2025}$)", zorder=3)
 
-    # Poisson GLM forecast line
-    ax.plot(FORECAST_YEARS, r["poi_pred"], "o-", color=col, lw=2.8, ms=8,
-            zorder=6, label=r"Poisson GLM forecast")
+    # Poisson GLM forecast — thicker line, darker fill
+    ax.plot(FORECAST_YEARS, r["poi_pred"], "o-", color=col, lw=3.0, ms=9,
+            zorder=6, label=r"Poisson GLM")
     ax.fill_between(FORECAST_YEARS, r["poi_lo"], r["poi_hi"],
-                    color=col, alpha=0.22, label=r"90\% PI (Poisson)")
+                    color=col, alpha=0.30, label=r"90\% PI (Poisson)")
 
-    # Negative Binomial GLM forecast line (wider PI — honest overdispersion)
-    nb_col = "#333333"
-    ax.plot(FORECAST_YEARS, r["nb_pred"], "s--", color=nb_col, lw=2.0, ms=6,
-            zorder=5, label=r"Neg.\ Binomial forecast")
+    # Negative Binomial GLM — black for clear distinction
+    nb_col = "black"
+    ax.plot(FORECAST_YEARS, r["nb_pred"], "s--", color=nb_col, lw=2.5, ms=8,
+            zorder=5, label=r"Neg.\ Binomial")
     ax.fill_between(FORECAST_YEARS, r["nb_lo"], r["nb_hi"],
-                    color=nb_col, alpha=0.10, label=r"90\% PI (Neg.\ Bin.)")
+                    color=nb_col, alpha=0.12, label=r"90\% PI (NB)")
 
-    ax.axhline(r["lam_stat"], color=PALETTE["gray"], ls=":", lw=2.0,
-               label=rf"Stationary mean = {r['lam_stat']:.0f}/yr")
+    ax.axhline(r["lam_stat"], color=PALETTE["gray"], ls=":", lw=2.2,
+               label=rf"Mean = {r['lam_stat']:.0f}/yr")
 
-    # Forecast zone shading
-    ax.axvspan(2025.5, 2030.5, alpha=0.07, color="gold")
+    # Forecast zone — slightly stronger shading
+    ax.axvspan(2025.5, 2030.5, alpha=0.10, color="#DAA520")
     ylim_top = ax.get_ylim()[1] if ax.get_ylim()[1] > 0 else 1
     ax.text(2027.5, ylim_top * 0.97,
             r"\textit{Forecast}", ha="center", va="top", fontsize=FS,
-            color="#8B6914", fontweight="bold")
+            color="#5C4000", fontweight="bold")
 
-    ax.set_title(title_tex, fontsize=FS+3, pad=8, fontweight="bold")
+    ax.set_title(title_tex, fontsize=FS+3, pad=10, fontweight="bold")
     ax.set_xlabel(r"Year", fontsize=FS+1)
     ax.set_ylabel(r"$N$ events / year", fontsize=FS+1)
     ax.tick_params(labelsize=FS)
-    ax.legend(fontsize=FS-2, loc="upper left", framealpha=0.93,
-              edgecolor="#cccccc", ncol=1)
+    ax.legend(fontsize=FS-1, loc="upper left", framealpha=0.95,
+              edgecolor="#333333", ncol=1)
     ax.set_xlim(2005, 2031)
 
 axes[5].set_visible(False)
@@ -1457,20 +1483,21 @@ subsets = [
     ("Outside BD",   modern[~modern.inside_bangladesh], PALETTE["red"],    "-.", "^"),
 ]
 
-fig, axes = plt.subplots(1, 2, figsize=(16, 7))
+fig, axes = plt.subplots(1, 2, figsize=(17, 7))
 
 # Panel (a): log10(annual rate) vs M — GR-style cumulative hazard curve
 ax = axes[0]
 for label, sub, col, ls, mk in subsets:
     rates = np.array([(sub.magnitude >= m).sum() / N_YRS for m in mpts])
     rates_safe = np.where(rates > 0, rates, np.nan)
-    ax.semilogy(mpts, rates_safe, ls, color=col, lw=2.5, label=label,
-                marker=mk, ms=6, markevery=5)
+    ax.semilogy(mpts, rates_safe, ls, color=col, lw=3.0, label=label,
+                marker=mk, ms=8, markevery=5, markeredgecolor="#222222",
+                markeredgewidth=0.8)
 
 ax.set_xlabel(r"Magnitude ($M$)", fontsize=FS+2)
 ax.set_ylabel(r"Annual rate $\lambda$ (events yr$^{-1}$)", fontsize=FS+2)
 ax.set_title(r"\textbf{(a)} Cumulative annual hazard rate", fontweight="bold")
-ax.legend(fontsize=FS, framealpha=0.92)
+ax.legend(fontsize=FS, framealpha=0.95, edgecolor="#333333")
 ax.yaxis.set_major_formatter(ticker.FuncFormatter(lambda v, _: (
     f"{v:.0f}" if v >= 1 else (f"1/{1/v:.0f}" if v > 0.01 else f"$10^{{{int(np.log10(v))}}}$"))))
 ax.tick_params(labelsize=FS)
@@ -1480,19 +1507,20 @@ ax2 = axes[1]
 for label, sub, col, ls, mk in subsets:
     n_evts = np.array([(sub.magnitude >= m).sum() for m in mpts], dtype=float)
     rts = np.where(n_evts > 0, N_YRS / n_evts, np.nan)
-    ax2.semilogy(mpts, rts, ls, color=col, lw=2.5, label=label,
-                 marker=mk, ms=6, markevery=5)
+    ax2.semilogy(mpts, rts, ls, color=col, lw=3.0, label=label,
+                 marker=mk, ms=8, markevery=5, markeredgecolor="#222222",
+                 markeredgewidth=0.8)
 
-# Reference lines
+# Reference lines — dark and labelled clearly
 for yr, lbl in [(1, "1 yr"), (10, "10 yr"), (100, "100 yr")]:
-    ax2.axhline(yr, color=PALETTE["gray"], ls=":", lw=1.2, alpha=0.7)
-    ax2.text(7.55, yr, lbl, va="center", ha="left", fontsize=FS-2,
-             color=PALETTE["gray"])
+    ax2.axhline(yr, color="#333333", ls=":", lw=1.8, alpha=0.85)
+    ax2.text(7.55, yr, lbl, va="center", ha="left", fontsize=FS-1,
+             color="#333333", fontweight="bold")
 
 ax2.set_xlabel(r"Magnitude ($M$)", fontsize=FS+2)
 ax2.set_ylabel(r"Return period $T_r$ (years)", fontsize=FS+2)
 ax2.set_title(r"\textbf{(b)} Seismic return period", fontweight="bold")
-ax2.legend(fontsize=FS, framealpha=0.92)
+ax2.legend(fontsize=FS, framealpha=0.95, edgecolor="#333333")
 ax2.yaxis.set_major_formatter(ticker.FuncFormatter(lambda v, _: (
     f"{v:.0f}" if v < 1000 else f"{v:.0f}")))
 ax2.tick_params(labelsize=FS)
@@ -1659,7 +1687,7 @@ ax.text(2016, 2.4, r"Modern digital", ha="center", fontsize=FS-1,
 # Panel (b): event count per window
 ax2 = axes[1]
 ax2.bar(mc_df.year_center, mc_df.n, width=0.9, color=PALETTE["blue"],
-        alpha=0.65, label="Events in window")
+        alpha=0.80, edgecolor="#222222", linewidth=0.5, label="Events in window")
 ax2.axvline(2007, color=PALETTE["green"], ls="--", lw=1.8, label="Modern era start")
 ax2.set_xlabel(r"Year", fontsize=FS+2)
 ax2.set_ylabel(r"$N$ events in window", fontsize=FS+2)
@@ -1849,11 +1877,11 @@ for _, row in big.iterrows():
 
 # Reference magnitude lines
 for mref, lbl in [(4.0, r"$M 4$"), (5.0, r"$M 5$"), (6.0, r"$M 6$")]:
-    ax.axhline(mref, color=PALETTE["gray"], ls=":", lw=1.0, alpha=0.6)
+    ax.axhline(mref, color="#444444", ls=":", lw=1.6)
     ax.text(1917.5, mref, lbl, ha="right", va="center", fontsize=FS-1,
-            color=PALETTE["gray"])
+            color="#333333", fontweight="bold")
 
-ax.axvline(2007, color=PALETTE["green"], ls="--", lw=1.5, alpha=0.6)
+ax.axvline(2007, color=PALETTE["green"], ls="--", lw=2.0)
 ax.text(2007.3, 2.3, r"Modern era", fontsize=FS-1, color=PALETTE["green"],
         style="italic", va="bottom")
 
@@ -1968,9 +1996,9 @@ if len(mdf_mag) > 1:
 
     lims = [min(mdf_mag.el_mag.min(), mdf_mag.bmd_mag.min()) - 0.2,
             max(mdf_mag.el_mag.max(), mdf_mag.bmd_mag.max()) + 0.2]
-    ax.plot(lims, lims, "k--", lw=1.5, alpha=0.6, label="1:1 line")
+    ax.plot(lims, lims, "k--", lw=2.0, alpha=0.9, label="1:1 line")
     ax.plot(lims, [l + bias_mag for l in lims], color=PALETTE["red"],
-            ls=":", lw=1.5, alpha=0.8,
+            ls=":", lw=2.0, alpha=0.95,
             label=rf"Bias-corrected ($\Delta = {bias_mag:+.2f}$)")
     ax.set_xlim(lims); ax.set_ylim(lims)
     ax.text(0.06, 0.93,
@@ -2000,7 +2028,7 @@ ax2.axvline(el_depths.median(),  color=PALETTE["blue"],   ls="--", lw=2.0,
             label=rf"Median EL = {el_depths.median():.0f} km")
 ax2.axvline(bmd_depths.median(), color=PALETTE["orange"], ls="--", lw=2.0,
             label=rf"Median BMD = {bmd_depths.median():.0f} km")
-ax2.axvline(70, color=PALETTE["gray"], ls=":", lw=1.5, alpha=0.7,
+ax2.axvline(70, color="#444444", ls=":", lw=2.0,
             label=r"70 km (crustal boundary)")
 
 ax2.set_xlabel(r"Focal depth (km)", fontsize=FS+2)
@@ -2080,31 +2108,35 @@ lam_bd_arr  = exceedance_curve(modern_ep[modern_ep.inside_bangladesh],
 lam_out_arr = exceedance_curve(modern_ep[~modern_ep.inside_bangladesh],
                                 N_YRS_EP, M_range, b_lin)
 
-fig, axes = plt.subplots(1, 3, figsize=(20, 8))
+fig, axes = plt.subplots(1, 3, figsize=(21, 8))
+
+# High-contrast colours for the five T-value curves — distinguishable in B&W
+EP_LINE_STYLES = ["-", "--", "-.", ":", (0,(3,1,1,1))]
+EP_COLORS_HC   = ["#0d4f8b", "#1e8449", "#c0392b", "#e67e00", "#7b2d8b"]
 
 def plot_ep(ax, lam_arr, title_str, note=None):
-    for i, (T, col) in enumerate(zip(T_vals, EP_COLORS)):
+    for i, (T, col, ls) in enumerate(zip(T_vals, EP_COLORS_HC, EP_LINE_STYLES)):
         prob = 1 - np.exp(-lam_arr * T)
-        ax.plot(M_range, prob * 100, color=col, lw=2.5,
+        ax.plot(M_range, prob * 100, ls=ls, color=col, lw=3.0,
                 label=rf"$T = {T}$ yr")
 
-    # Reference 10% and 50% lines
+    # Reference 10% and 50% lines — dark and clearly labelled
     for p_ref, ls in [(10, ":"), (50, "--")]:
-        ax.axhline(p_ref, color=PALETTE["gray"], ls=ls, lw=1.0, alpha=0.6)
-        ax.text(8.0, p_ref + 1, rf"{p_ref}\%", ha="right", va="bottom",
-                fontsize=FS-2, color=PALETTE["gray"])
+        ax.axhline(p_ref, color="#333333", ls=ls, lw=1.8, alpha=0.9)
+        ax.text(7.98, p_ref + 2, rf"{p_ref}\%", ha="right", va="bottom",
+                fontsize=FS-1, color="#333333", fontweight="bold")
 
     ax.set_xlabel(r"Magnitude ($M$)", fontsize=FS+2)
     ax.set_ylabel(r"Exceedance probability (\%)", fontsize=FS+2)
     ax.set_title(title_str, fontweight="bold", fontsize=FS+2)
     ax.set_xlim(3.0, 8.0)
-    ax.set_ylim(0, 105)
+    ax.set_ylim(0, 108)
     ax.tick_params(labelsize=FS)
-    ax.legend(fontsize=FS-1, framealpha=0.92, loc="upper right")
+    ax.legend(fontsize=FS, framealpha=0.95, edgecolor="#333333", loc="upper right")
     if note:
-        ax.text(0.03, 0.08, note, transform=ax.transAxes, fontsize=FS-2,
-                color=PALETTE["gray"], style="italic",
-                bbox=dict(boxstyle="round,pad=0.3", fc="white", alpha=0.75, ec="none"))
+        ax.text(0.03, 0.08, note, transform=ax.transAxes, fontsize=FS-1,
+                color="#333333", style="italic",
+                bbox=dict(boxstyle="round,pad=0.3", fc="white", alpha=0.88, ec="#aaaaaa"))
 
 plot_ep(axes[0], lam_all_arr,
         r"\textbf{(a)} All events",
